@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+<!--    눌린 버튼은 검정, 안눌린 버튼은 흰색으로 설정-->
+
+    <item
+        android:color="@color/black"
+        android:state_checked="true"/>
+
+    <item
+        android:color="@color/white"
+        android:state_checked="false"/>
+</selector>
