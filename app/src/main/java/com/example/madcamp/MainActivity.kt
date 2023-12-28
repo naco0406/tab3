@@ -8,6 +8,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import androidx.viewpager2.widget.ViewPager2
+import androidx.core.content.ContextCompat
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -19,7 +20,21 @@ class MainActivity : AppCompatActivity() {
         viewPager.adapter = ViewPagerAdapter(this)
 
         TabLayoutMediator(tabLayout, viewPager) { tab, position ->
-            tab.text = "Tab ${position + 1}"
+            when (position){
+                0 -> {
+                    tab.text = "Contact"
+                    tab.icon = ContextCompat.getDrawable(this, R.drawable.baseline_contact_page_24)
+                }
+                1 -> {
+                    tab.text = "Gallery"
+                    tab.icon = ContextCompat.getDrawable(this, R.drawable.baseline_photo_library_24)
+                }
+                2 -> {
+                    tab.text = "404"
+                    tab.icon = ContextCompat.getDrawable(this, R.drawable.baseline_question_mark_24)
+                }
+            }
+//            tab.text = "Tab ${position + 1}"
         }.attach()
     }
 }
