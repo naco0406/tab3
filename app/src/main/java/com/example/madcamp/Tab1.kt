@@ -1,10 +1,15 @@
 package com.example.madcamp
 
+import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.madcamp.databinding.FragmentTab1Binding
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -34,8 +39,30 @@ class Tab1 : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_tab1, container, false)
+        val view =  inflater.inflate(R.layout.fragment_tab1, container, false)
+        return view
     }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val rv_profile = view.findViewById<RecyclerView>(R.id.rv_profile)
+        val profileList = ArrayList<Profile>()
+        profileList.add(Profile("image1", "이름1", "010-1234-5678" ))
+        profileList.add(Profile("image2", "이름2", "010-1234-5678" ))
+        profileList.add(Profile("image3", "이름3", "010-1234-5678" ))
+        Log.d("test", "profileList.add")
+
+        // ArrayList로 어댑터 만들고, 어댑터와 리사이클러뷰 갱신
+        val profileAdapter = ProfileAdapter(profileList)
+
+        rv_profile.adapter = profileAdapter
+        context?.let {
+            rv_profile.layoutManager = LinearLayoutManager(it)
+        }
+        profileAdapter.notifyDataSetChanged()
+
+}
 
     companion object {
         /**
