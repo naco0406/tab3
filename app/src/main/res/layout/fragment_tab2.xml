@@ -5,38 +5,6 @@
     android:layout_height="match_parent"
     tools:context=".Tab2">
 
-    <!-- TODO: Custom Image Gallery -->
-<!--    <LinearLayout-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="match_parent"-->
-<!--        android:orientation="vertical">-->
-<!--        <LinearLayout-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="150dp"-->
-<!--            android:orientation="horizontal"-->
-<!--            android:padding="4dp">-->
-<!--            <ImageView-->
-<!--                android:src="@drawable/image_choonsik1"-->
-<!--                android:layout_width="0dp"-->
-<!--                android:layout_height="match_parent"-->
-<!--                android:layout_weight="1"-->
-<!--                android:layout_marginStart="4dp"-->
-<!--                android:layout_marginEnd="4dp"-->
-<!--                android:scaleType="centerInside"-->
-<!--                android:background="@drawable/image_border"-->
-<!--            />-->
-<!--            <ImageView-->
-<!--                android:src="@drawable/image_choonsik2"-->
-<!--                android:layout_width="0dp"-->
-<!--                android:layout_height="match_parent"-->
-<!--                android:layout_weight="1"-->
-<!--                android:layout_marginStart="4dp"-->
-<!--                android:layout_marginEnd="4dp"-->
-<!--                android:scaleType="centerInside"-->
-<!--                android:background="@drawable/image_border"-->
-<!--            />-->
-<!--        </LinearLayout>-->
-<!--    </LinearLayout>-->
     <RelativeLayout
         android:id="@+id/fragment2"
         android:layout_width="match_parent"

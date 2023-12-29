@@ -9,9 +9,23 @@ import android.view.ViewGroup
 import android.widget.GridLayout
 import android.widget.ImageView
 import android.app.Dialog
-import androidx.cardview.widget.CardView
+import android.content.Context
+import android.widget.TextView
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import java.lang.Exception
+import java.lang.reflect.Type
+import java.sql.Timestamp
+import java.text.SimpleDateFormat
+
+data class PhotoData(
+    val place: String,
+    val timestamp: Timestamp,
+    val star: Int
+)
 
 class Tab2 : Fragment() {
+
     override fun onResume() {
         super.onResume()
         val rootView = view
@@ -31,7 +45,20 @@ class Tab2 : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-//        setContentView(R.layout.fragment_tab2)
+        val photoAllData: MutableList<List<PhotoData>> = mutableListOf()
+
+        val context = context ?: return
+        val jsonUtility = JsonUtility(context)
+        try {
+            val jsonData = jsonUtility.readJson("data.json")
+            val photoType: Type = object : TypeToken<List<PhotoData>>() {}.type
+            val photos = jsonUtility.parseJson<List<PhotoData>>(jsonData, photoType)
+            photoAllData.add(photos)
+            Log.d("Tab3", "Photo Place: ${photoAllData[0][0].place}, Timestamp: ${photoAllData[0][0].timestamp}")
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
         val gridLayout: GridLayout = view.findViewById(R.id.gridview)
         val imageResIds = listOf(
             R.drawable.image_choonsik1,
@@ -55,41 +82,23 @@ class Tab2 : Fragment() {
             R.drawable.image_cat4,
             R.drawable.image_cat5,
         )
-        imageResIds.forEachIndexed() { index, resId ->
-//            val cardView = CardView(requireContext()).apply{
-//                cardElevation = 10f
-//                radius = 4f
-//
-//                val imageView = ImageView(context).apply {
-//                    setImageResource(resId)
-//                    tag = index
-//                    layoutParams = ViewGroup.LayoutParams(
-//                        ViewGroup.LayoutParams.MATCH_PARENT,
-//                        ViewGroup.LayoutParams.MATCH_PARENT
-//                    )
-//                }
-//                addView(imageView)
-//            }
-//
-//            val params = GridLayout.LayoutParams().apply {
-//                width = GridLayout.LayoutParams.WRAP_CONTENT
-//                height = GridLayout.LayoutParams.WRAP_CONTENT
-//                setMargins(8, 8, 8, 8)
-//                rowSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f)
-//                columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f)
-//
-//            }
-//            gridLayout.addView(cardView, params)
-
-
+        val plusAddedIds = imageResIds + R.drawable.baseline_add_24
+        val sizeIds = plusAddedIds.size
+//        Log.d("MyFragment0", "Ids: $sizeIds")
+        plusAddedIds.forEachIndexed() { index, resId ->
             val imageView = ImageView(context).apply {
-                Log.d("MyFragment3", "Original cell size: $resId")
-//                if (resId != null) {
-//                    setImageResource(resId)
-//                }
+//                Log.d("MyFragment3", "Original cell size: $resId")
                 setImageResource(resId)
                 setOnClickListener{
-                    showImageModal(resId)
+                    if (index == plusAddedIds.size - 1){
+
+                    } else {
+                        val place = photoAllData[0][index].place
+                        val timestamp = photoAllData[0][index].timestamp
+                        val star = photoAllData[0][index].star
+                        Log.d("ShowImageModal", "resId: $resId, place: $place, timestamp: $timestamp, star: $star")
+                        showImageModal(resId, place, timestamp, star)
+                    }
                 }
 
                 layoutParams = GridLayout.LayoutParams().apply {
@@ -100,16 +109,18 @@ class Tab2 : Fragment() {
                     columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f)
                     tag = index
                     scaleType = ImageView.ScaleType.CENTER_CROP
+                    if (index == plusAddedIds.size - 1){
+                        scaleType = ImageView.ScaleType.CENTER
+                    }
                 }
                 elevation = 10f
                 translationZ = 10f
             }
             gridLayout.addView(imageView)
-            Log.d("MyFragment4", "ImageView added: $resId")
-            gridLayout.requestLayout()
         }
+        gridLayout.requestLayout()
 
-        adjustSquareImage(gridLayout, imageResIds.size)
+        adjustSquareImage(gridLayout, plusAddedIds.size)
         Log.d("MyFragment5", "adjustSquareImage run")
     }
 
@@ -140,13 +151,34 @@ class Tab2 : Fragment() {
         })
     }
 
-    private fun showImageModal(imageResId: Int){
+    private fun showImageModal(imageResId: Int, place: String, timestamp: Timestamp, star: Int){
         val dialog = Dialog(requireContext())
         dialog.setContentView(R.layout.dialog_image) // 별도의 레이아웃 파일
         val modalImageView = dialog.findViewById<ImageView>(R.id.dialogImageView)
+        val modalTextView = dialog.findViewById<TextView>(R.id.dialogTextView)
         modalImageView.setImageResource(imageResId) // 큰 이미지로 변경
+        val modalText = modalDataToText(place, timestamp, star)
+        Log.d("Modal", "Modal Text: $modalText")
+        modalTextView.setText(modalText)
         dialog.show()
+    }
+
+    fun modalDataToText(place: String, timestamp: Timestamp, star: Int): String {
+        val dateFormat = SimpleDateFormat("yyyy년 MM월 dd일 HH시 mm분")
+        val formattedDate = dateFormat.format(timestamp)
+        val stars = "⭐".repeat(star)
+
+        return "장소: $place\n시간: $formattedDate\n별점: $stars"
     }
 
 }
 
+class JsonUtility(private val context: Context){
+    fun readJson(fileName: String): String {
+        return context.assets.open(fileName).bufferedReader().use { it.readText() }
+    }
+    fun <T> parseJson(jsonData: String, clazz: Type): T{
+        val gson = Gson()
+        return gson.fromJson(jsonData, clazz)
+    }
+}
