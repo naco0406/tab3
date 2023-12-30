@@ -2,4 +2,9 @@
     <string name="app_name">Tab3</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string-array name="options_array">
+        <item>민지</item>
+        <item>하니</item>
+        <item>해린</item>
+    </string-array>
 </resources>

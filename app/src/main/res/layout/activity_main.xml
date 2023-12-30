@@ -11,21 +11,23 @@
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
         android:layout_alignParentBottom="true"
-        android:elevation="20dp">
+        android:background="@color/light_gray"
+        android:elevation="20dp"
+        app:tabIndicatorHeight="0dp">
 
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:icon="@drawable/baseline_contact_page_24"
-            android:text="Contact" />
+            android:text="연락처" />
 
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:icon="@drawable/baseline_photo_library_24"
-            android:text="Gallery" />
+            android:text="갤러리" />
 
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
@@ -38,6 +40,7 @@
         android:id="@+id/viewPager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/tabLayout"/>
+        android:layout_above="@+id/tabLayout"
+        android:background="@color/background_color"/>
 
 </RelativeLayout>

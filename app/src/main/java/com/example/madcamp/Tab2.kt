@@ -19,16 +19,28 @@ import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.Button
+import android.widget.CheckBox
+import android.widget.EditText
+import android.widget.RatingBar
+import android.widget.Spinner
 import android.widget.TextView
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import com.bumptech.glide.Glide
 import com.bumptech.glide.annotation.GlideModule
+import com.bumptech.glide.load.MultiTransformation
+import com.bumptech.glide.load.resource.bitmap.CenterCrop
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.module.AppGlideModule
+import com.bumptech.glide.request.RequestOptions
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -61,9 +73,17 @@ class Tab2 : Fragment() {
     }
 
     private lateinit var takePictureLauncher: ActivityResultLauncher<Uri>
+    private lateinit var profileList: List<Profile>
+    private var selectedProfiles: List<Profile> = listOf()
+    private var placeList: MutableList<String>? = mutableListOf()
+    private var selectedPlace: String = "모두"
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         JsonUtility(requireContext()).copyFileToInternalStorage("data_sample_image.json", "data_image.json")
+        val photos = JsonUtility(requireContext()).readPhotoData("data_image.json")
+        photos.forEach {
+            appendPlace(it.place)
+        }
         if (context?.let { ContextCompat.checkSelfPermission(it, Manifest.permission.CAMERA) } != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.CAMERA), 100)
         }
@@ -92,6 +112,9 @@ class Tab2 : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        loadProfileData()
+        setupSpinner()
+
         val fab: FloatingActionButton = view.findViewById(R.id.fab)
         fab.setOnClickListener {
             dispatchTakePictureIntent()
@@ -100,12 +123,15 @@ class Tab2 : Fragment() {
         val photoAllData: MutableList<PhotoData> = mutableListOf()
         val photos = JsonUtility(requireContext()).readPhotoData("data_image.json")
         photos.forEach {
+            appendPlace(it.place)
             photoAllData.add(it)
         }
         Log.d("Initial JSON Data", "$photos")
+        val transformation = MultiTransformation(CenterCrop(), RoundedCorners(16))
 
         val gridLayout: GridLayout = view.findViewById(R.id.gridview)
         photoAllData.forEachIndexed { index, photoData ->
+            appendPlace(photoData.place)
             val place = photoData.place
             val timestamp = photoData.timestamp
             val star = photoData.star
@@ -116,6 +142,8 @@ class Tab2 : Fragment() {
                 setOnClickListener {
                     showImageModal(uri, type, place, timestamp, star, people)
                 }
+//                background = ContextCompat.getDrawable(context, R.drawable.profile_image_rounded_corner)
+
                 layoutParams = GridLayout.LayoutParams().apply {
                     width = 0 // 초기 너비 0으로 설정
                     height = 0 // 초기 높이 0으로 설정
@@ -123,21 +151,21 @@ class Tab2 : Fragment() {
                     rowSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f)
                     columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f)
                     tag = index
-                    scaleType = ImageView.ScaleType.CENTER_CROP
+//                    scaleType = ImageView.ScaleType.CENTER_CROP
                 }
-                elevation = 10f
-                translationZ = 10f
             }
             if (type == "internal"){
                 val imageId = context?.resources?.getIdentifier(uri, "drawable", requireContext().packageName)
                 Log.d("Image Loader", "Image Uri from JSON: $imageId")
                 Glide.with(this)
                     .load(imageId)
+                    .apply(RequestOptions.bitmapTransform(transformation))
                     .into(imageView)
             } else if (type == "external"){
                 val imageUri = Uri.parse(uri)
                 Glide.with(this)
                     .load(imageUri)
+                    .apply(RequestOptions.bitmapTransform(transformation))
                     .into(imageView)
             } else {
                 error("Invalid Image Type")
@@ -148,6 +176,22 @@ class Tab2 : Fragment() {
         adjustSquareImage(gridLayout, photoAllData.size)
     }
 
+    private fun loadProfileData(){
+        val context = context ?: return
+        val jsonUtility = JsonUtility(context)
+
+        try {
+            val jsonData = jsonUtility.readJson("test.json")
+            val profileType: Type = object: TypeToken<List<Profile>>() {}.type
+            val profiles = jsonUtility.parseJson<List<Profile>>(jsonData, profileType)
+
+            profileList = profiles
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
     private fun adjustSquareImage(gridLayout: GridLayout, childImageNumber: Int) {
         gridLayout.viewTreeObserver.addOnGlobalLayoutListener(object : android.view.ViewTreeObserver.OnGlobalLayoutListener {
             override fun onGlobalLayout() {
@@ -155,20 +199,17 @@ class Tab2 : Fragment() {
                 val totalWidth = gridLayout.width - gridLayout.paddingLeft - gridLayout.paddingRight
                 val expectedMargin = 12
                 val totalMargin = (gridLayout.columnCount - 1) * expectedMargin * 2 // 마진의 2배를 고려
-
                 val cellSize = (totalWidth - totalMargin) / gridLayout.columnCount
                 for (i in 0 until childImageNumber) {
-                    val child = gridLayout.getChildAt(i) as ImageView
-                    val originalSize = child.layoutParams.width
-//                    Log.d("MyFragment2", "Original cell size: $originalSize")
-                    val params = GridLayout.LayoutParams() as GridLayout.LayoutParams
-                    params.width = cellSize
-                    params.height = cellSize
-                    params.setMargins(8, 8, 8, 8)
-//                    Log.d("MyFragment2", "Calculated cell size: $cellSize")
-                    child.layoutParams = params
-                    child.requestLayout()
-//                    Log.d("MyFragment", "New size for child $i: ${params.width} x ${params.height}")
+                    val child = gridLayout.getChildAt(i)
+                    if (child is ImageView){
+                        val params = GridLayout.LayoutParams() as GridLayout.LayoutParams
+                        params.width = cellSize
+                        params.height = cellSize
+                        params.setMargins(8, 8, 8, 8)
+                        child.layoutParams = params
+                        child.requestLayout()
+                    }
                 }
             }
         })
@@ -236,75 +277,110 @@ class Tab2 : Fragment() {
     private fun addImageModal(photoUri: Uri){
         Log.d("addImageModal", "addImageModal")
         val dialog = Dialog(requireContext())
-        dialog.setContentView(R.layout.dialog_image) // 별도의 레이아웃 파일
-        val modalImageView = dialog.findViewById<ImageView>(R.id.dialogImageView)
-        val modalTextView = dialog.findViewById<TextView>(R.id.dialogTextView)
+        dialog.setContentView(R.layout.image_input) // 별도의 레이아웃 파일
+        val modalImageView = dialog.findViewById<ImageView>(R.id.capturedImageView)
+//        val modalTextView = dialog.findViewById<TextView>(R.id.inputEditText)
+        val inputEditText = dialog.findViewById<EditText>(R.id.inputEditText)
+        val inputRatingBar = dialog.findViewById<RatingBar>(R.id.ratingBar)
+        val saveButton = dialog.findViewById<Button>(R.id.saveButton)
         val file = File(currentPhotoPath)
         Log.d("addImageModal", "photoUri : $photoUri")
         Glide.with(this)
             .load(file)
             .into(modalImageView)
 
-        val place = "test"
-        val timestamp = Timestamp.valueOf("2023-11-02 11:28:12")
-        val star = 5
-        val people = listOf("하니", "민지")
-        val modalText = modalDataToText(place, timestamp, star, people)
-//        Log.d("Modal", "Modal Text: $modalText")
-        modalTextView.setText(modalText)
-        dialog.show()
-        val newPhotoData = PhotoData(
-            place = "카이스트",
-            timestamp = Timestamp(System.currentTimeMillis()),
-            star = 5,
-            people = listOf("하니", "민지"),
-            type = "external",
-            uri = photoUri.toString()
-        )
-        JsonUtility(requireContext()).appendPhotoJson("data_image.json", newPhotoData)
-        refreshGridLayout()
-        Log.d("refreshGridLayout", "refreshGridLayout")
+        val peopleButton: Button = dialog.findViewById(R.id.peopleButton)
+        peopleButton.setOnClickListener {
+            showProfileDialog()
+        }
+        saveButton.setOnClickListener {
+            val inputText = inputEditText.text.toString()
+            val inputRating = inputRatingBar.rating.toInt()
+            val peopleNames = selectedProfiles.map { it.name }
+            Log.d("InputText", "Entered text: $inputText")
 
-        val photoDataList = JsonUtility(requireContext()).readPhotoData("data_image.json")
-        Log.d("Updated JSON Data", photoDataList.toString())
+            val newPhotoData = PhotoData(
+                place = inputText,
+                timestamp = Timestamp(System.currentTimeMillis()),
+                star = inputRating,
+                people = peopleNames,
+                type = "external",
+                uri = photoUri.toString()
+            )
+            JsonUtility(requireContext()).appendPhotoJson("data_image.json", newPhotoData)
+            refreshGridLayout()
+            Log.d("refreshGridLayout", "refreshGridLayout")
+
+            val photoDataList = JsonUtility(requireContext()).readPhotoData("data_image.json")
+            Log.d("Updated JSON Data", photoDataList.toString())
+
+            setupSpinner()
+            dialog.dismiss() // Dialog 닫기
+        }
+        dialog.show()
 
     }
+    private fun showProfileDialog() {
+        val checkedItems = BooleanArray(profileList.size) { false }
+        val selectedProfile: MutableList<Profile?> = MutableList(profileList.size) { null }
+        val adapter = itemProfileAdapter(requireContext(), profileList, checkedItems, selectedProfile)
+
+        AlertDialog.Builder(requireContext())
+            .setTitle("Select People")
+            .setAdapter(adapter, null)  // 여기서 커스텀 어댑터를 설정
+            .setPositiveButton("OK") { dialog, _ ->
+                selectedProfiles = selectedProfile.filterNotNull()
+                dialog.dismiss()
+            }
+            .setNegativeButton("Cancel") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .show()
+    }
+
 
     private fun refreshGridLayout() {
         val gridLayout: GridLayout = view?.findViewById(R.id.gridview) ?: return
         gridLayout.removeAllViews() // 기존의 모든 뷰 제거
-
+        val transformation = MultiTransformation(CenterCrop(), RoundedCorners(16))
         val newPhotoDataList = JsonUtility(requireContext()).readPhotoData("data_image.json")
         newPhotoDataList.forEach { photoData ->
+            appendPlace(photoData.place)
+
             val imageView = ImageView(context).apply {
                 setOnClickListener {
                     showImageModal(photoData.uri, photoData.type, photoData.place, photoData.timestamp, photoData.star, photoData.people)
                 }
+//                background = ContextCompat.getDrawable(context, R.drawable.profile_image_rounded_corner)
                 layoutParams = GridLayout.LayoutParams().apply {
                     width = GridLayout.LayoutParams.WRAP_CONTENT
                     height = GridLayout.LayoutParams.WRAP_CONTENT
                     setMargins(8, 8, 8, 8)
                     rowSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f)
                     columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f)
-                    scaleType = ImageView.ScaleType.CENTER_CROP
+//                    scaleType = ImageView.ScaleType.CENTER_CROP
                 }
-                elevation = 10f
-                translationZ = 10f
             }
 
             when (photoData.type) {
                 "internal" -> {
                     val imageId = resources.getIdentifier(photoData.uri, "drawable", requireContext().packageName)
-                    Glide.with(this).load(imageId).into(imageView)
+                    Glide.with(this)
+                        .load(imageId)
+                        .apply(RequestOptions.bitmapTransform(transformation))
+                        .into(imageView)
                 }
                 "external" -> {
                     val file = File(photoData.uri)
-                    Glide.with(this).load(file).into(imageView)
+                    Glide.with(this)
+                        .load(file)
+                        .apply(RequestOptions.bitmapTransform(transformation))
+                        .into(imageView)
                 }
             }
-
-            gridLayout.addView(imageView)
-
+            if (selectedPlace == "모두" || selectedPlace == photoData.place){
+                gridLayout.addView(imageView)
+            }
         }
         gridLayout.requestLayout()
         adjustSquareImage(gridLayout, newPhotoDataList.size)
@@ -316,7 +392,73 @@ class Tab2 : Fragment() {
         val stars = "⭐".repeat(star)
         val peopleText = people.joinToString(", ")
 
-        return "장소: $place\n시간: $formattedDate\n별점: $stars\n인물: $peopleText"
+        return "장소: $place\n\n시간: $formattedDate\n\n인물: $peopleText\n\n별점: $stars"
     }
 
+    fun appendPlace(newPlace: String){
+        if (placeList.isNullOrEmpty()) {
+            placeList = mutableListOf(newPlace)
+        } else if (newPlace !in placeList!!) {
+            placeList!!.add(newPlace)
+        }
+        Log.d("appendPlace", "appendPlace: $placeList")
+    }
+    private fun setupSpinner() {
+        val defaultItem = "모두"
+        val placePlaceholder = listOf(defaultItem) + (placeList ?: return)
+
+        val spinner: Spinner = requireView().findViewById(R.id.placeSpinner)
+        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, placePlaceholder)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinner.adapter = adapter
+
+        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
+                if (position == 0) {
+                    selectedPlace = "모두"
+                } else {
+                    selectedPlace = (placeList ?: return)[position - 1]
+                }
+                refreshGridLayout()
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>) {
+                // 아무것도 선택되지 않았을 때의 처리
+                Log.d("is it", "is it")
+            }
+        }
+    }
+
+}
+
+class itemProfileAdapter(
+    context: Context,
+    private val profiles: List<Profile>,
+    private val checkedItems: BooleanArray,
+    private val selectedProfile: MutableList<Profile?>
+) : ArrayAdapter<Profile>(context, 0, profiles) {
+
+    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+        val view = convertView ?: LayoutInflater.from(context).inflate(R.layout.item_profile, parent, false)
+        val imageView = view.findViewById<ImageView>(R.id.profile_image)
+        val textView = view.findViewById<TextView>(R.id.profile_name)
+
+        val profile = getItem(position)
+        textView.text = profile?.name
+
+        // 이미지 로딩 라이브러리 (예: Glide)를 사용하여 이미지 로드
+        Glide.with(context)
+            .load(profile?.image) // profile.image는 이미지 URL
+            .into(imageView)
+
+        val checkBox = view.findViewById<CheckBox>(R.id.profile_checkbox)
+        checkBox.isChecked = checkedItems[position]
+
+        checkBox.setOnCheckedChangeListener { _, isChecked ->
+            checkedItems[position] = isChecked
+//            selectedProfile.add(profiles[position])
+            selectedProfile[position] = if (isChecked) profiles[position] else null
+        }
+        return view
+    }
 }

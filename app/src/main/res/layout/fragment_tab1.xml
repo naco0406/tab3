@@ -13,13 +13,16 @@
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginLeft="24dp"
+            android:layout_marginRight="24dp"
+            android:elevation="20dp">
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:layout_marginEnd="16dp"
-                android:gravity="center_vertical|bottom">
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -29,32 +32,40 @@
                     android:textSize="25dp"
                     android:paddingTop="5dp"
                     android:paddingBottom="5dp"/>
+                <android.widget.Space
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"/>
                 <androidx.appcompat.widget.SearchView
                     android:id="@+id/searchView"
-                    android:layout_width="wrap_content"
+                    android:layout_width="200dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="10dp"
+                    android:background="@drawable/profile_rounded_corner"
                     app:searchIcon="@drawable/baseline_search_24"
                     app:iconifiedByDefault="false"
                     app:queryBackground="@null"
                     android:focusable="true"
-                    app:queryHint="검색어를 입력하시오" />
+                    app:queryHint="검색" />
 
             </LinearLayout>
         </androidx.appcompat.widget.Toolbar>
 
         <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:layout_below="@id/toolbar"
+            android:layout_marginLeft="24dp"
+            android:layout_marginRight="24dp">
+            <android.widget.Space
+                android:layout_width="0dp"
+                android:layout_height="16dp"/>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_profile"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:layout_below="@id/toolbar">
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rv_profile"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    tools:listitem="@layout/view_item"
-                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
+                android:layout_height="wrap_content"
+                tools:listitem="@layout/view_item"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
             </LinearLayout>
     </RelativeLayout>
 
