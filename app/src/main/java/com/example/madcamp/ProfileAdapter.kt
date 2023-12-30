@@ -88,12 +88,12 @@ class ProfileAdapter(private var profileList: MutableList<Profile>):
                 // 검색어가 비어있거나 null이면 전체 프로필 반환
                 filteredList.addAll(profileListAll)
             } else{
-                val filterPattern = constraint.toString().trim()
-
+                val filterPattern = constraint.toString().trim().replace("-", "")
                 for (profile in profileListAll) {
                     val profileNameLower = profile.name.lowercase()
+                    val profilephone = profile.phone.replace("-", "")
 
-                    if(profileNameLower.contains(filterPattern)) {
+                    if(profileNameLower.contains(filterPattern) || profilephone.contains(filterPattern)) {
                         filteredList.add(profile)
                     }
                 }
