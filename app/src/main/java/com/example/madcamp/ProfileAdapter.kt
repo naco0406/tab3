@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView.OnItemClickListener
 import android.widget.Filter
 import android.widget.Filterable
 import android.widget.ImageView
@@ -14,10 +15,11 @@ import com.bumptech.glide.Glide
 import org.w3c.dom.Text
 
 
-class ProfileAdapter(private var profileList: MutableList<Profile>):
+class ProfileAdapter(var profileList: MutableList<Profile>):
         RecyclerView.Adapter<ProfileAdapter.ProfileViewHolder>(), Filterable {
 
     private var profileListAll: MutableList<Profile> = ArrayList(profileList)
+    private var onItemClickListener: OnItemClickListener? = null
 
     init {
         sortByName()
@@ -47,7 +49,6 @@ class ProfileAdapter(private var profileList: MutableList<Profile>):
         Glide.with(holder.itemView.context).clear(holder.rv_image)
         Glide.with(holder.itemView.context)
             .load(profile.image)
-//            .load("https://media.vlpt.us/images/sasy0113/post/f7085683-1a62-4ce7-9f7f-e8fd2f3ec825/Android%20Kotlin.jpg")
             .override(100, 100)
             .placeholder(R.drawable.ic_home)
             .error(R.drawable.baseline_question_mark_24)
@@ -56,8 +57,11 @@ class ProfileAdapter(private var profileList: MutableList<Profile>):
 //        holder.rv_image.text = profile.image
         holder.rv_name.text = profile.name
         holder.rv_phone.text = profile.phone
-//        holder.rv_name.text = profileList[position].name
-//        holder.rv_phone.text = profileList[position].phone
+
+        // 뷰홀더에 클릭 리스너 설정
+        holder.itemView.setOnClickListener {
+            onItemClickListener?.onItemClick(position)
+        }
 
     }
     override fun getItemCount(): Int {
@@ -65,13 +69,29 @@ class ProfileAdapter(private var profileList: MutableList<Profile>):
         return profileList.count()
     }
 
+    interface OnItemClickListener {
+        fun onItemClick(position: Int)
+    }
+
+    fun setOnItemClickListener(listener: OnItemClickListener) {
+        this.onItemClickListener = listener
+    }
+
 
     // 해당 뷰와 연결
     inner class ProfileViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var rv_image : ImageView = itemView.findViewById(R.id.tv_rv_photo)
-//        val rv_image = itemView.findViewById<TextView>(R.id.tv_rv_photo)
         val rv_name = itemView.findViewById<TextView>(R.id.tv_rv_name)
         val rv_phone = itemView.findViewById<TextView>(R.id.tv_rv_phone)
+
+        init {
+            itemView.setOnClickListener {
+                val position = adapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    onItemClickListener?.onItemClick(position)
+                }
+            }
+        }
     }
 
     override fun getFilter(): Filter {
@@ -110,6 +130,7 @@ class ProfileAdapter(private var profileList: MutableList<Profile>):
 
             profileList.clear()
             profileList.addAll(results?.values as List<Profile>)
+            sortByName()
             notifyDataSetChanged()
         }
     }
