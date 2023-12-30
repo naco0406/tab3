@@ -1,6 +1,7 @@
 package com.example.madcamp
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -27,12 +28,13 @@ private const val ARG_PARAM2 = "param2"
  * Use the [Tab1.newInstance] factory method to
  * create an instance of this fragment.
  */
-class Tab1 : Fragment() {
+class Tab1 : Fragment(), ProfileAdapter.OnItemClickListener {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
 
     lateinit var imageView: ImageView
+    private lateinit var profileAdapter: ProfileAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -104,10 +106,26 @@ class Tab1 : Fragment() {
                 return false
             }
         })
-
         searchView.clearFocus()
 
+        this@Tab1.profileAdapter = ProfileAdapter(profileAllData)
+
+        // RecyclerView 아이템 클릭 리스너 설정
+        profileAdapter.setOnItemClickListener(this)
 }
+
+    override fun onItemClick(position: Int) {
+
+        val selectedProfile = profileAdapter.profileList[position]
+
+        // ProfileSubActivity로 이동하는 Intent 생성
+        val intent = Intent(context, ProfileSubActivity::class.java).apply {
+            putExtra("image", selectedProfile.image)
+            putExtra("name", selectedProfile.name)
+            putExtra("phone", selectedProfile.phone)
+        }
+        startActivity(intent)
+    }
 
     // 키보드 보여주기
     private fun showKeyboard(view: View) {
