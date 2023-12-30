@@ -35,28 +35,6 @@ class Tab3 : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        val context = context ?: return
-        val jsonUtil = JsonUtil(context)
-        try {
-            val jsonData = jsonUtil.readJson("data_image.json")
-            val photoType: Type = object : TypeToken<List<Photo>>() {}.type
-            val photo = jsonUtil.parseJson<List<Photo>>(jsonData, photoType)
-
-            android.util.Log.d("Tab3", "Photo Place: ${photo[0].place}, Timestamp: ${photo[0].timestamp}")
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
     }
 
-}
-
-class JsonUtil(private val context: Context){
-    fun readJson(fileName: String): String {
-        return context.assets.open(fileName).bufferedReader().use { it.readText() }
-    }
-    fun <T> parseJson(jsonData: String, clazz: Type): T{
-        val gson = Gson()
-        return gson.fromJson(jsonData, clazz)
-    }
 }
