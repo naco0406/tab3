@@ -11,10 +11,18 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import org.w3c.dom.Text
 
-//class ProfileAdapter(val profileList: ArrayList<Profile>):
 
-class ProfileAdapter(val profileList: MutableList<Profile>):
+class ProfileAdapter(var profileList: MutableList<Profile>):
         RecyclerView.Adapter<ProfileAdapter.ProfileViewHolder>() {
+
+    init {
+        sortByName()
+    }
+
+    private fun sortByName() {
+        profileList = profileList.sortedBy { it.name }.toMutableList()
+        notifyDataSetChanged()
+    }
 
     // 뷰가 만들어질때 호출되는 메서드. 뷰홀더를 생성해 리턴
     // recyclerview 만들어질때만 호출
@@ -61,12 +69,5 @@ class ProfileAdapter(val profileList: MutableList<Profile>):
         val rv_name = itemView.findViewById<TextView>(R.id.tv_rv_name)
         val rv_phone = itemView.findViewById<TextView>(R.id.tv_rv_phone)
     }
-
-//    fun addItemDecoration(context: Context, recyclerView: RecyclerView) {
-//        val itemDecoration = DividerItemDecoration(context)
-//        recyclerView.addItemDecoration(itemDecoration)
-//
-////        recyclerView.addItemDecoration(DividerItemDecoration(context))
-//    }
 
 }
