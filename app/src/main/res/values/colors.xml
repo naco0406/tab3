@@ -15,6 +15,7 @@
     <color name="gray">#FFCED4DA</color>
     <color name="dark_gray">#FF868E96</color>
     <color name="divider_color">#CCCCCC</color>
+    <color name="background_color">#F9F9F9</color>
 
     <color name="Gold">#F4E665</color>
 </resources>

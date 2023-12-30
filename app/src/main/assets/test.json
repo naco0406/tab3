@@ -1,17 +1,12 @@
 [
-  {"image": "https://media.vlpt.us/images/sasy0113/post/f7085683-1a62-4ce7-9f7f-e8fd2f3ec825/Android%20Kotlin.jpg", "name": "홍길동", "phone": "010-1234-5678"},
-  {"image": "https://source.unsplash.com/800x600/?people,portrait", "name": "김영희", "phone": "010-9876-5432"},
-  {"image": "https://source.unsplash.com/800x600/?people,portrait&1", "name": "박미영", "phone": "010-1111-2222"},
-  {"image": "https://source.unsplash.com/800x600/?people,portrait&2", "name": "정민준", "phone": "010-9999-8888"},
-  {"image": "https://source.unsplash.com/800x600/?people,portrait&3", "name": "송지은", "phone": "010-4444-5555"},
-  {"image": "https://source.unsplash.com/800x600/?people,portrait&4", "name": "김성호", "phone": "010-7777-6666"},
-  {"image": "https://source.unsplash.com/800x600/?people,portrait&5", "name": "이현지", "phone": "010-2222-3333"},
-  {"image": "https://source.unsplash.com/800x600/?people,portrait&6", "name": "방재민", "phone": "010-6666-7777"},
-  {"image": "https://source.unsplash.com/800x600/?people,portrait&7", "name": "최지원", "phone": "010-3333-4444"},
-  {"image": "https://source.unsplash.com/800x600/?people,portrait&8", "name": "강동훈", "phone": "010-8888-9999"},
-  {"image": "https://source.unsplash.com/800x600/?people,portrait&9", "name": "한가은", "phone": "010-5555-4444"},
-  {"image": "https://source.unsplash.com/800x600/?people,portrait&10", "name": "신준호", "phone": "010-0000-9999"},
-  {"image": "https://source.unsplash.com/800x600/?people,portrait&11", "name": "박서영", "phone": "010-6666-5555"},
-  {"image": "https://source.unsplash.com/800x600/?people,portrait&12", "name": "이주원", "phone": "010-1111-2222"},
-  {"image":  "https://source.unsplash.com/800x600/?people,portrait&13", "name": "이철수", "phone": "010-5555-1234"}
+  {"image": "https://search.pstatic.net/common?type=b&size=3000&quality=100&direct=true&src=http%3A%2F%2Fsstatic.naver.net%2Fpeople%2FprofileImg%2F008ac9a5-795e-4060-849d-4860af085cfe.jpg", "name": "민지", "phone": "010-0507-1111"},
+  {"image": "https://search.pstatic.net/common?type=b&size=3000&quality=100&direct=true&src=http%3A%2F%2Fsstatic.naver.net%2Fpeople%2FprofileImg%2F3bbd678a-8cea-45fb-86f0-92df62bf6006.jpg", "name": "해린", "phone": "010-0515-2222"},
+  {"image": "https://search.pstatic.net/common?type=b&size=3000&quality=100&direct=true&src=http%3A%2F%2Fsstatic.naver.net%2Fpeople%2FprofileImg%2F602f0e75-f047-40db-b42a-20e95c265966.jpg", "name": "하니", "phone": "010-1006-3333"},
+  {"image": "https://search.pstatic.net/common?type=b&size=3000&quality=100&direct=true&src=http%3A%2F%2Fsstatic.naver.net%2Fpeople%2FprofileImg%2F3c425d60-69b0-4f15-abd0-39d1da383435.jpg", "name": "혜인", "phone": "010-0421-4444"},
+  {"image": "https://search.pstatic.net/common?type=b&size=3000&quality=100&direct=true&src=http%3A%2F%2Fsstatic.naver.net%2Fpeople%2FprofileImg%2F9dbaa974-e2a0-41e8-9364-38f7f8d0791e.jpg", "name": "다니엘", "phone": "010-0411-5555"},
+  {"image": "https://search.pstatic.net/common?type=b&size=3000&quality=100&direct=true&src=http%3A%2F%2Fsstatic.naver.net%2Fpeople%2FprofileImg%2F8e7e6167-7518-49e1-9107-b8a39b34ad3f.jpg", "name": "김채원", "phone": "010-0801-6666"},
+  {"image": "https://search.pstatic.net/common?type=b&size=3000&quality=100&direct=true&src=http%3A%2F%2Fsstatic.naver.net%2Fpeople%2FprofileImg%2Fff142ed7-4861-4844-9ce3-76d250d55ea8.jpg", "name": "사쿠라", "phone": "010-0319-7777"},
+  {"image": "https://search.pstatic.net/common?type=b&size=3000&quality=100&direct=true&src=http%3A%2F%2Fsstatic.naver.net%2Fpeople%2FprofileImg%2F1540018e-f57d-4b25-8b8a-c7221fe5ad1c.jpg", "name": "카즈하", "phone": "010-0809-8888"},
+  {"image": "https://search.pstatic.net/common?type=b&size=3000&quality=100&direct=true&src=http%3A%2F%2Fsstatic.naver.net%2Fpeople%2FprofileImg%2F3474ff70-433e-456b-9eae-2d7c5d4503aa.jpg", "name": "홍은채", "phone": "010-1110-9999"},
+  {"image": "https://search.pstatic.net/common?type=b&size=3000&quality=100&direct=true&src=http%3A%2F%2Fsstatic.naver.net%2Fpeople%2FprofileImg%2F38f48265-0c4b-4975-b48a-4908e25ca5c5.jpg", "name": "허윤진", "phone": "010-1008-1010"}
 ]

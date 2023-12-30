@@ -3,42 +3,62 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingHorizontal="20dp"
-    android:paddingVertical="10dp"
-    android:background="@color/white"
+    android:paddingHorizontal="24dp"
+    android:paddingVertical="12dp"
+    android:layout_marginBottom="4dp"
+    android:background="@drawable/profile_rounded_corner"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <ImageView
         android:id="@+id/tv_rv_photo"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:src="@color/black"
-        app:layout_constraintTop_toTopOf="parent"
+        android:background="@drawable/profile_image_rounded_corner"
+        android:scaleType="centerCrop"
+        android:clipToOutline="true"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"/>
 
     <TextView
         android:id="@+id/tv_rv_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="이름"
         android:layout_marginLeft="20dp"
-        android:textSize="26sp"
+        android:fontFamily="@font/gothic_a1_medium"
+        android:lineSpacingExtra="0dp"
+        android:minHeight="0dp"
+        android:paddingTop="0dp"
+        android:paddingBottom="0dp"
+        android:text="이름"
         android:textColor="@color/black"
+        android:textSize="20dp"
+        app:layout_constraintBottom_toTopOf="@+id/tv_rv_phone"
         app:layout_constraintLeft_toRightOf="@id/tv_rv_photo"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/tv_rv_phone"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="전화번호"
-        android:layout_marginTop="10dp"
         android:layout_marginLeft="20dp"
-        android:textSize="18sp"
+        android:fontFamily="@font/gothic_a1_light"
+        android:text="전화번호"
         android:textColor="@color/black"
+        android:textSize="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toRightOf="@id/tv_rv_photo"
-        app:layout_constraintTop_toBottomOf="@id/tv_rv_name"/>
+        app:layout_constraintTop_toBottomOf="@id/tv_rv_name" />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/text_group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:constraint_referenced_ids="tv_rv_name,tv_rv_phone"
+        app:layout_constraintStart_toStartOf="@+id/tv_rv_photo"
+        app:layout_constraintEnd_toEndOf="@+id/tv_rv_photo"
+        app:layout_constraintTop_toTopOf="@+id/tv_rv_photo"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_rv_photo"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
