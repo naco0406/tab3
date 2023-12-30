@@ -1,15 +1,18 @@
 package com.example.madcamp
 
-import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.madcamp.databinding.FragmentTab1Binding
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import java.lang.reflect.Type
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -25,6 +28,8 @@ class Tab1 : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
+
+    lateinit var imageView: ImageView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,18 +52,34 @@ class Tab1 : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val rv_profile = view.findViewById<RecyclerView>(R.id.rv_profile)
-        val profileList = ArrayList<Profile>()
-        profileList.add(Profile("image1", "이름1", "010-1234-5678" ))
-        profileList.add(Profile("image2", "이름2", "010-1234-5678" ))
-        profileList.add(Profile("image3", "이름3", "010-1234-5678" ))
-        Log.d("test", "profileList.add")
+        val profileAllData : MutableList<Profile> = mutableListOf()
+
+        val context = context ?:return
+        val jsonUtility = JsonUtility(context)
+        try {
+            val jsonData = jsonUtility.readJson("test.json")
+            val profileType: Type = object: TypeToken<List<Profile>>() {}.type
+            val profiles = jsonUtility.parseJson<List<Profile>>(jsonData, profileType)
+
+            profiles.forEach{
+                profileAllData.add(it)
+            }
+//            Log.d("ProfileList: ", "image: ${profileAllData[0][0].image}, name: ${profileAllData[0][0].name}, phone: ${profileAllData[0][0].phone}")
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+//        profileAllData.forEachIndexed()
 
         // ArrayList로 어댑터 만들고, 어댑터와 리사이클러뷰 갱신
-        val profileAdapter = ProfileAdapter(profileList)
+        val profileAdapter = ProfileAdapter(profileAllData)
 
         rv_profile.adapter = profileAdapter
         context?.let {
             rv_profile.layoutManager = LinearLayoutManager(it)
+            rv_profile.addItemDecoration(VerticalItemDecorator(10))
+//            profileAdapter.addItemDecoration(it, rv_profile)
         }
         profileAdapter.notifyDataSetChanged()
 
@@ -83,4 +104,18 @@ class Tab1 : Fragment() {
                 }
             }
     }
+}
+
+class JsonUtility(private val context: Context) {
+
+    fun readJson(fileName: String): String {
+        return context.assets.open(fileName).bufferedReader().use{it.readText()}
+    }
+
+    // gson - json 파싱과정을 간단하게
+    fun <T> parseJson(jsonData: String, clazz: Type): T {
+        val gson = Gson()
+        return gson.fromJson(jsonData, clazz)
+    }
+
 }
