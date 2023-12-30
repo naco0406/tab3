@@ -29,6 +29,7 @@ import androidx.core.content.FileProvider
 import com.bumptech.glide.Glide
 import com.bumptech.glide.annotation.GlideModule
 import com.bumptech.glide.module.AppGlideModule
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.io.File
@@ -39,11 +40,15 @@ import java.sql.Timestamp
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import java.util.SimpleTimeZone
 
 data class PhotoData(
     val place: String,
     val timestamp: Timestamp,
-    val star: Int
+    val star: Int,
+    val people: List<String>,
+    val type: String,
+    val uri: String
 )
 
 class Tab2 : Fragment() {
@@ -58,6 +63,7 @@ class Tab2 : Fragment() {
     private lateinit var takePictureLauncher: ActivityResultLauncher<Uri>
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        JsonUtility(requireContext()).copyFileToInternalStorage("data_sample_image.json", "data_image.json")
         if (context?.let { ContextCompat.checkSelfPermission(it, Manifest.permission.CAMERA) } != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.CAMERA), 100)
         }
@@ -70,6 +76,8 @@ class Tab2 : Fragment() {
                 Log.d("Photo captured", "Photo captured")
                 val photoUri = Uri.parse(currentPhotoPath)
                 addImageModal(photoUri)
+            } else {
+                Log.d("Photo capture", "Canceled or failed")
             }
         }
 
@@ -84,66 +92,30 @@ class Tab2 : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val photoAllData: MutableList<PhotoData> = mutableListOf()
-
-        val context = context ?: return
-        val jsonUtility = JsonUtility(context)
-        try {
-            val jsonData = jsonUtility.readJson("data_image.json")
-            val photoType: Type = object : TypeToken<List<PhotoData>>() {}.type
-            val photos = jsonUtility.parseJson<List<PhotoData>>(jsonData, photoType)
-            photos.forEach {
-                photoAllData.add(it)
-            }
-//            Log.d("Tab3", "Photo Place: ${photoAllData[0][0].place}, Timestamp: ${photoAllData[0][0].timestamp}")
-        } catch (e: Exception) {
-            e.printStackTrace()
+        val fab: FloatingActionButton = view.findViewById(R.id.fab)
+        fab.setOnClickListener {
+            dispatchTakePictureIntent()
         }
 
-        val gridLayout: GridLayout = view.findViewById(R.id.gridview)
-        val imageResIds = listOf(
-            R.drawable.image_choonsik1,
-            R.drawable.image_choonsik2,
-            R.drawable.image_choonsik3,
-            R.drawable.image_choonsik4,
-            R.drawable.image_choonsik5,
-            R.drawable.image_cat1,
-            R.drawable.image_cat2,
-            R.drawable.image_cat3,
-            R.drawable.image_cat4,
-            R.drawable.image_cat5,
-            R.drawable.image_choonsik1,
-            R.drawable.image_choonsik2,
-            R.drawable.image_choonsik3,
-            R.drawable.image_choonsik4,
-            R.drawable.image_choonsik5,
-            R.drawable.image_cat1,
-            R.drawable.image_cat2,
-            R.drawable.image_cat3,
-            R.drawable.image_cat4,
-            R.drawable.image_cat5,
-        )
-        val plusAddedIds = imageResIds + R.drawable.baseline_add_24
-        val sizeIds = plusAddedIds.size
-//        Log.d("MyFragment0", "Ids: $sizeIds")
-        plusAddedIds.forEachIndexed() { index, resId ->
-            val imageView = ImageView(context).apply {
-//                Log.d("MyFragment3", "Original cell size: $resId")
-                setImageResource(resId)
-                setOnClickListener{
-                    if (index == plusAddedIds.size - 1){
-                        Log.d("PlusButton", "Button Clicked")
-//                        addImageModal()
-                        dispatchTakePictureIntent()
-                    } else {
-                        val place = photoAllData[index].place
-                        val timestamp = photoAllData[index].timestamp
-                        val star = photoAllData[index].star
-//                        Log.d("ShowImageModal", "resId: $resId, place: $place, timestamp: $timestamp, star: $star")
-                        showImageModal(resId, place, timestamp, star)
-                    }
-                }
+        val photoAllData: MutableList<PhotoData> = mutableListOf()
+        val photos = JsonUtility(requireContext()).readPhotoData("data_image.json")
+        photos.forEach {
+            photoAllData.add(it)
+        }
+        Log.d("Initial JSON Data", "$photos")
 
+        val gridLayout: GridLayout = view.findViewById(R.id.gridview)
+        photoAllData.forEachIndexed { index, photoData ->
+            val place = photoData.place
+            val timestamp = photoData.timestamp
+            val star = photoData.star
+            val people = photoData.people
+            val type = photoData.type
+            val uri = photoData.uri
+            val imageView = ImageView(context).apply {
+                setOnClickListener {
+                    showImageModal(uri, type, place, timestamp, star, people)
+                }
                 layoutParams = GridLayout.LayoutParams().apply {
                     width = 0 // 초기 너비 0으로 설정
                     height = 0 // 초기 높이 0으로 설정
@@ -152,19 +124,28 @@ class Tab2 : Fragment() {
                     columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f)
                     tag = index
                     scaleType = ImageView.ScaleType.CENTER_CROP
-                    if (index == plusAddedIds.size - 1){
-                        scaleType = ImageView.ScaleType.CENTER
-                    }
                 }
                 elevation = 10f
                 translationZ = 10f
             }
+            if (type == "internal"){
+                val imageId = context?.resources?.getIdentifier(uri, "drawable", requireContext().packageName)
+                Log.d("Image Loader", "Image Uri from JSON: $imageId")
+                Glide.with(this)
+                    .load(imageId)
+                    .into(imageView)
+            } else if (type == "external"){
+                val imageUri = Uri.parse(uri)
+                Glide.with(this)
+                    .load(imageUri)
+                    .into(imageView)
+            } else {
+                error("Invalid Image Type")
+            }
             gridLayout.addView(imageView)
         }
         gridLayout.requestLayout()
-
-        adjustSquareImage(gridLayout, plusAddedIds.size)
-//        Log.d("MyFragment5", "adjustSquareImage run")
+        adjustSquareImage(gridLayout, photoAllData.size)
     }
 
     private fun adjustSquareImage(gridLayout: GridLayout, childImageNumber: Int) {
@@ -193,42 +174,34 @@ class Tab2 : Fragment() {
         })
     }
 
-    private fun showImageModal(imageResId: Int, place: String, timestamp: Timestamp, star: Int){
+    private fun showImageModal(uri: String, type: String, place: String, timestamp: Timestamp, star: Int, people: List<String>){
         val dialog = Dialog(requireContext())
         dialog.setContentView(R.layout.dialog_image) // 별도의 레이아웃 파일
         val modalImageView = dialog.findViewById<ImageView>(R.id.dialogImageView)
         val modalTextView = dialog.findViewById<TextView>(R.id.dialogTextView)
-        modalImageView.setImageResource(imageResId) // 큰 이미지로 변경
-        val modalText = modalDataToText(place, timestamp, star)
+        if (type == "internal"){
+            val imageId = context?.resources?.getIdentifier(uri, "drawable", requireContext().packageName)
+            Log.d("Image Loader", "Image Uri from JSON: $imageId")
+            Glide.with(this)
+                .load(imageId)
+                .into(modalImageView)
+        } else if (type == "external"){
+            val imageUri = Uri.parse(uri)
+            Glide.with(this)
+                .load(imageUri)
+                .into(modalImageView)
+            Log.d("External image", "External Iamge Loaded")
+        } else {
+            error("Invalid Image Type")
+        }
+
+        val modalText = modalDataToText(place, timestamp, star, people)
 //        Log.d("Modal", "Modal Text: $modalText")
         modalTextView.setText(modalText)
         dialog.show()
     }
 
     lateinit var currentPhotoPath: String
-//    private fun dispatchTakePictureIntent() {
-//        Log.d("PictureIntent", "Take Picture")
-//        val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-//        activity?.let { activity ->
-//            takePictureIntent.resolveActivity(activity.packageManager)?.also {
-//                val photoFile: File? = try {
-//                    createImageFile()
-//                } catch (ex: IOException) {
-//                    // 에러 처리
-//                    null
-//                }
-//                photoFile?.also {
-//                    val photoURI: Uri = FileProvider.getUriForFile(
-//                        activity,
-//                        "${activity.packageName}.provider",
-//                        it
-//                    )
-//                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
-//                    ActivityCompat.startActivityForResult(activity, takePictureIntent, 1, null)
-//                }
-//            }
-//        }
-//    }
     private fun dispatchTakePictureIntent() {
         Log.d("PictureIntent", "Take Picture")
         val photoFile: File? = try {
@@ -260,18 +233,6 @@ class Tab2 : Fragment() {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        Log.d("ImageResulting", "requestCode: $requestCode, resultCode: $resultCode")
-        if (requestCode == 1 && resultCode == Activity.RESULT_OK) {
-            // 촬영한 사진 처리
-            // 예: ImageView에 사진 표시, 메타데이터와 함께 JSON 파일에 저장 등
-
-        }
-    }
-
-
     private fun addImageModal(photoUri: Uri){
         Log.d("addImageModal", "addImageModal")
         val dialog = Dialog(requireContext())
@@ -284,22 +245,78 @@ class Tab2 : Fragment() {
             .load(file)
             .into(modalImageView)
 
-
         val place = "test"
         val timestamp = Timestamp.valueOf("2023-11-02 11:28:12")
         val star = 5
-        val modalText = modalDataToText(place, timestamp, star)
+        val people = listOf("하니", "민지")
+        val modalText = modalDataToText(place, timestamp, star, people)
 //        Log.d("Modal", "Modal Text: $modalText")
         modalTextView.setText(modalText)
         dialog.show()
+        val newPhotoData = PhotoData(
+            place = "카이스트",
+            timestamp = Timestamp(System.currentTimeMillis()),
+            star = 5,
+            people = listOf("하니", "민지"),
+            type = "external",
+            uri = photoUri.toString()
+        )
+        JsonUtility(requireContext()).appendPhotoJson("data_image.json", newPhotoData)
+        refreshGridLayout()
+        Log.d("refreshGridLayout", "refreshGridLayout")
+
+        val photoDataList = JsonUtility(requireContext()).readPhotoData("data_image.json")
+        Log.d("Updated JSON Data", photoDataList.toString())
+
     }
 
-    fun modalDataToText(place: String, timestamp: Timestamp, star: Int): String {
+    private fun refreshGridLayout() {
+        val gridLayout: GridLayout = view?.findViewById(R.id.gridview) ?: return
+        gridLayout.removeAllViews() // 기존의 모든 뷰 제거
+
+        val newPhotoDataList = JsonUtility(requireContext()).readPhotoData("data_image.json")
+        newPhotoDataList.forEach { photoData ->
+            val imageView = ImageView(context).apply {
+                setOnClickListener {
+                    showImageModal(photoData.uri, photoData.type, photoData.place, photoData.timestamp, photoData.star, photoData.people)
+                }
+                layoutParams = GridLayout.LayoutParams().apply {
+                    width = GridLayout.LayoutParams.WRAP_CONTENT
+                    height = GridLayout.LayoutParams.WRAP_CONTENT
+                    setMargins(8, 8, 8, 8)
+                    rowSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f)
+                    columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f)
+                    scaleType = ImageView.ScaleType.CENTER_CROP
+                }
+                elevation = 10f
+                translationZ = 10f
+            }
+
+            when (photoData.type) {
+                "internal" -> {
+                    val imageId = resources.getIdentifier(photoData.uri, "drawable", requireContext().packageName)
+                    Glide.with(this).load(imageId).into(imageView)
+                }
+                "external" -> {
+                    val file = File(photoData.uri)
+                    Glide.with(this).load(file).into(imageView)
+                }
+            }
+
+            gridLayout.addView(imageView)
+
+        }
+        gridLayout.requestLayout()
+        adjustSquareImage(gridLayout, newPhotoDataList.size)
+    }
+
+    fun modalDataToText(place: String, timestamp: Timestamp, star: Int, people: List<String>): String {
         val dateFormat = SimpleDateFormat("yyyy년 MM월 dd일 HH시 mm분")
         val formattedDate = dateFormat.format(timestamp)
         val stars = "⭐".repeat(star)
+        val peopleText = people.joinToString(", ")
 
-        return "장소: $place\n시간: $formattedDate\n별점: $stars"
+        return "장소: $place\n시간: $formattedDate\n별점: $stars\n인물: $peopleText"
     }
 
 }

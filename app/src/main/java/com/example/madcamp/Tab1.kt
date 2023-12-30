@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import java.io.File
 import java.lang.reflect.Type
 
 // TODO: Rename parameter arguments, choose names that match
@@ -151,6 +152,48 @@ class JsonUtility(private val context: Context) {
     fun <T> parseJson(jsonData: String, clazz: Type): T {
         val gson = Gson()
         return gson.fromJson(jsonData, clazz)
+    }
+
+    fun appendPhotoJson(fileName: String, newData: PhotoData){
+        try {
+            val file = File(context.filesDir, fileName)
+            val data: MutableList<PhotoData>
+            if (file.exists()) {
+                val jsonData = file.readText()
+                val photoType: Type = object : TypeToken<List<PhotoData>>() {}.type
+                data = Gson().fromJson(jsonData, photoType)
+            } else {
+                data = mutableListOf()
+            }
+            data.add(newData)
+            file.writeText(Gson().toJson(data))
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    fun copyFileToInternalStorage(fileName: String, toName: String) {
+        val assetManager = context.assets
+        val inputStream = assetManager.open(fileName)
+        val outputFile = File(context.filesDir, toName)
+        if (!outputFile.exists()) {
+            inputStream.use { input ->
+                outputFile.outputStream().use { output ->
+                    input.copyTo(output)
+                }
+            }
+        }
+    }
+    fun readPhotoData(fileName: String): List<PhotoData> {
+        val file = File(context.filesDir, fileName)
+        return if (file.exists()) {
+            val jsonData = file.readText()
+            val photoType: Type = object : TypeToken<List<PhotoData>>() {}.type
+            Gson().fromJson(jsonData, photoType)
+        } else {
+            Log.d("readPhotoData", "No such file")
+            emptyList()
+        }
     }
 
 }

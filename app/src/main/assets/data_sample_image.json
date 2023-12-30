@@ -1,0 +1,107 @@
+[
+  {
+    "place": "파리",
+    "timestamp": "2023-12-30T05:45:29Z",
+    "star": 5,
+    "people": [
+      "김성호",
+      "이현지"
+    ],
+    "type": "internal",
+    "uri": "image_choonsik1"
+  },
+  {
+    "place": "파리",
+    "timestamp": "2023-12-29T04:45:29Z",
+    "star": 1,
+    "people": [
+      "이현지"
+    ],
+    "type": "internal",
+    "uri": "image_choonsik2"
+  },
+  {
+    "place": "뉴욕",
+    "timestamp": "2023-12-28T03:45:29Z",
+    "star": 5,
+    "people": [
+      "박미영"
+    ],
+    "type": "internal",
+    "uri": "image_choonsik3"
+  },
+  {
+    "place": "파리",
+    "timestamp": "2023-12-27T02:45:29Z",
+    "star": 5,
+    "people": [
+      "박미영"
+    ],
+    "type": "internal",
+    "uri": "image_choonsik4"
+  },
+  {
+    "place": "파리",
+    "timestamp": "2023-12-26T01:45:29Z",
+    "star": 5,
+    "people": [
+      "이현지",
+      "홍길동"
+    ],
+    "type": "internal",
+    "uri": "image_choonsik5"
+  },
+  {
+    "place": "파리",
+    "timestamp": "2023-12-25T00:45:29Z",
+    "star": 4,
+    "people": [
+      "김성호"
+    ],
+    "type": "internal",
+    "uri": "image_cat1"
+  },
+  {
+    "place": "서울",
+    "timestamp": "2023-12-23T23:45:29Z",
+    "star": 3,
+    "people": [
+      "홍길동",
+      "이현지"
+    ],
+    "type": "internal",
+    "uri": "image_cat2"
+  },
+  {
+    "place": "파리",
+    "timestamp": "2023-12-22T22:45:29Z",
+    "star": 3,
+    "people": [
+      "홍길동",
+      "박미영"
+    ],
+    "type": "internal",
+    "uri": "image_cat3"
+  },
+  {
+    "place": "서울",
+    "timestamp": "2023-12-21T21:45:29Z",
+    "star": 4,
+    "people": [
+      "이현지"
+    ],
+    "type": "internal",
+    "uri": "image_cat4"
+  },
+  {
+    "place": "서울",
+    "timestamp": "2023-12-20T20:45:29Z",
+    "star": 3,
+    "people": [
+      "김성호",
+      "이현지"
+    ],
+    "type": "internal",
+    "uri": "image_cat5"
+  }
+]
