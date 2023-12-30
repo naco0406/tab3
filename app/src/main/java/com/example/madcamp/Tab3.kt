@@ -39,7 +39,7 @@ class Tab3 : Fragment() {
         val context = context ?: return
         val jsonUtil = JsonUtil(context)
         try {
-            val jsonData = jsonUtil.readJson("data.json")
+            val jsonData = jsonUtil.readJson("data_image.json")
             val photoType: Type = object : TypeToken<List<Photo>>() {}.type
             val photo = jsonUtil.parseJson<List<Photo>>(jsonData, photoType)
 
