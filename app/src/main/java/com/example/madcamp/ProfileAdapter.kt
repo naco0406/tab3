@@ -5,6 +5,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Filter
+import android.widget.Filterable
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
@@ -12,8 +14,10 @@ import com.bumptech.glide.Glide
 import org.w3c.dom.Text
 
 
-class ProfileAdapter(var profileList: MutableList<Profile>):
-        RecyclerView.Adapter<ProfileAdapter.ProfileViewHolder>() {
+class ProfileAdapter(private var profileList: MutableList<Profile>):
+        RecyclerView.Adapter<ProfileAdapter.ProfileViewHolder>(), Filterable {
+
+    private var profileListAll: MutableList<Profile> = ArrayList(profileList)
 
     init {
         sortByName()
@@ -68,6 +72,46 @@ class ProfileAdapter(var profileList: MutableList<Profile>):
 //        val rv_image = itemView.findViewById<TextView>(R.id.tv_rv_photo)
         val rv_name = itemView.findViewById<TextView>(R.id.tv_rv_name)
         val rv_phone = itemView.findViewById<TextView>(R.id.tv_rv_phone)
+    }
+
+    override fun getFilter(): Filter {
+        return profileFilter
+    }
+
+    private val profileFilter = object: Filter() {
+
+        override fun performFiltering(constraint: CharSequence?): FilterResults {
+            // 검색어에 해당하는 프로필을 찾아냄
+            val filteredList = mutableListOf<Profile>()
+
+            if (constraint.isNullOrBlank()) {
+                // 검색어가 비어있거나 null이면 전체 프로필 반환
+                filteredList.addAll(profileListAll)
+            } else{
+                val filterPattern = constraint.toString().trim()
+
+                for (profile in profileListAll) {
+                    val profileNameLower = profile.name.lowercase()
+
+                    if(profileNameLower.contains(filterPattern)) {
+                        filteredList.add(profile)
+                    }
+                }
+            }
+
+            // 결과를 FilterResults 객체에 담아 반환
+            val results = FilterResults()
+            results.values = filteredList
+            return results
+        }
+
+        // 필터링된 결과 어댑터에 적용하고, RecyclerView 갱신
+        override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
+
+            profileList.clear()
+            profileList.addAll(results?.values as List<Profile>)
+            notifyDataSetChanged()
+        }
     }
 
 }

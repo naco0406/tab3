@@ -303,13 +303,3 @@ class Tab2 : Fragment() {
     }
 
 }
-
-class JsonUtility(private val context: Context){
-    fun readJson(fileName: String): String {
-        return context.assets.open(fileName).bufferedReader().use { it.readText() }
-    }
-    fun <T> parseJson(jsonData: String, clazz: Type): T{
-        val gson = Gson()
-        return gson.fromJson(jsonData, clazz)
-    }
-}

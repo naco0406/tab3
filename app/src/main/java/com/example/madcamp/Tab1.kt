@@ -7,7 +7,9 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
+import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
@@ -70,8 +72,6 @@ class Tab1 : Fragment() {
             e.printStackTrace()
         }
 
-//        profileAllData.forEachIndexed()
-
         // ArrayList로 어댑터 만들고, 어댑터와 리사이클러뷰 갱신
         val profileAdapter = ProfileAdapter(profileAllData)
 
@@ -83,7 +83,42 @@ class Tab1 : Fragment() {
         }
         profileAdapter.notifyDataSetChanged()
 
+        // SearchView에 포커스 설정
+        val searchView = view.findViewById<androidx.appcompat.widget.SearchView>(R.id.searchView)
+        searchView.setOnQueryTextFocusChangeListener{ searchView, hasFocus ->
+            if (hasFocus) {
+                showKeyboard(searchView)
+            } else{
+                hideKeyboard(searchView)
+            }
+        }
+
+        searchView.setOnQueryTextListener(object: SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                profileAdapter.filter.filter(newText)
+                return false
+            }
+        })
+
+        searchView.clearFocus()
+
 }
+
+    // 키보드 보여주기
+    private fun showKeyboard(view: View) {
+        val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT)
+    }
+
+    // 키보드 숨기기
+    private fun hideKeyboard(view: View) {
+        val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(view.windowToken, 0)
+    }
 
     companion object {
         /**

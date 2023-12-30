@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     android:paddingHorizontal="20dp"
     android:paddingVertical="10dp"
-    android:background="@color/purple_500"
+    android:background="@color/white"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <ImageView
@@ -23,10 +23,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="이름"
-        android:textStyle="bold"
         android:layout_marginLeft="20dp"
-        android:textSize="24sp"
-        android:textColor="@color/white"
+        android:textSize="26sp"
+        android:textColor="@color/black"
         app:layout_constraintLeft_toRightOf="@id/tv_rv_photo"
         app:layout_constraintTop_toTopOf="parent"/>
 
@@ -38,7 +37,7 @@
         android:layout_marginTop="10dp"
         android:layout_marginLeft="20dp"
         android:textSize="18sp"
-        android:textColor="@color/white"
+        android:textColor="@color/black"
         app:layout_constraintLeft_toRightOf="@id/tv_rv_photo"
         app:layout_constraintTop_toBottomOf="@id/tv_rv_name"/>
 
