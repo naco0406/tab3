@@ -183,6 +183,7 @@ class JsonUtility(private val context: Context) {
             } else {
                 data = mutableListOf()
             }
+            // 데이터 추가하는 부분
             data.add(newData)
             file.writeText(Gson().toJson(data))
         } catch (e: Exception) {

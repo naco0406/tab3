@@ -6,7 +6,10 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.TypedValue
 import android.view.LayoutInflater
+import android.view.View
+import android.widget.FrameLayout
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
@@ -16,6 +19,7 @@ import com.google.android.material.tabs.TabLayoutMediator
 import androidx.viewpager2.widget.ViewPager2
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -26,24 +30,6 @@ class MainActivity : AppCompatActivity() {
         val viewPager: ViewPager2 = findViewById(R.id.viewPager)
         val tabLayout: TabLayout = findViewById(R.id.tabLayout)
         viewPager.adapter = ViewPagerAdapter(this)
-
-//        TabLayoutMediator(tabLayout, viewPager) { tab, position ->
-//            when (position){
-//                0 -> {
-//                    tab.text = "연락처"
-//                    tab.icon = ContextCompat.getDrawable(this, R.drawable.baseline_contact_page_24)
-//                }
-//                1 -> {
-//                    tab.text = "갤러리"
-//                    tab.icon = ContextCompat.getDrawable(this, R.drawable.baseline_photo_library_24)
-//                }
-//                2 -> {
-//                    tab.text = "404"
-//                    tab.icon = ContextCompat.getDrawable(this, R.drawable.baseline_question_mark_24)
-//                }
-//            }
-////            tab.text = "Tab ${position + 1}"
-//        }.attach()
         // 커스텀 레이아웃을 사용하여 탭 설정
         TabLayoutMediator(tabLayout, viewPager) { tab, position ->
             // 커스텀 뷰를 인플레이트
