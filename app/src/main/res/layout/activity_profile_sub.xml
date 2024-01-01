@@ -15,14 +15,21 @@
         android:layout_width="200dp"
         android:layout_height="200dp"
         android:layout_gravity="center"/>
+    <TextView
+        android:id="@+id/userId"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:textColor="@color/black"
+        android:textSize="20dp"
+        android:layout_marginTop="30dp"/>
 
     <TextView
         android:id="@+id/textViewName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="20dp"
-        android:layout_gravity="center"
-        android:layout_marginTop="30dp"/>
+        android:layout_gravity="center"/>
 
     <TextView
         android:id="@+id/textViewPhone"

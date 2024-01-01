@@ -1,7 +1,6 @@
 package com.example.madcamp
 
 import android.Manifest
-import android.app.Activity
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -12,13 +11,9 @@ import android.widget.GridLayout
 import android.widget.ImageView
 import android.app.Dialog
 import android.content.Context
-import android.content.Intent
-import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Build
 import android.os.Environment
-import android.provider.MediaStore
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
@@ -29,20 +24,16 @@ import android.widget.Spinner
 import android.widget.TextView
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import com.bumptech.glide.Glide
-import com.bumptech.glide.annotation.GlideModule
 import com.bumptech.glide.load.MultiTransformation
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import com.bumptech.glide.module.AppGlideModule
 import com.bumptech.glide.request.RequestOptions
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.io.File
 import java.io.IOException
@@ -52,7 +43,6 @@ import java.sql.Timestamp
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import java.util.SimpleTimeZone
 
 data class PhotoData(
     val place: String,
@@ -181,7 +171,7 @@ class Tab2 : Fragment() {
         val jsonUtility = JsonUtility(context)
 
         try {
-            val jsonData = jsonUtility.readJson("test.json")
+            val jsonData = jsonUtility.readJson("data_sample_user.json")
             val profileType: Type = object: TypeToken<List<Profile>>() {}.type
             val profiles = jsonUtility.parseJson<List<Profile>>(jsonData, profileType)
 
