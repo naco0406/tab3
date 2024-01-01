@@ -1,7 +1,9 @@
 package com.example.madcamp
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -12,6 +14,8 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.ImageView
 import androidx.appcompat.widget.SearchView
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
@@ -36,6 +40,8 @@ class Tab1 : Fragment(), ProfileAdapter.OnItemClickListener {
 
     lateinit var imageView: ImageView
     private lateinit var profileAdapter: ProfileAdapter
+    private var profileAllData: MutableList<Profile> = mutableListOf()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,6 +50,12 @@ class Tab1 : Fragment(), ProfileAdapter.OnItemClickListener {
 //        users.forEach {
 //
 //        }
+        if (context?.let { ContextCompat.checkSelfPermission(it, Manifest.permission.READ_EXTERNAL_STORAGE) } != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 100)
+        }
+        if (context?.let { ContextCompat.checkSelfPermission(it, Manifest.permission.WRITE_EXTERNAL_STORAGE) } != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), 100)
+        }
 
         arguments?.let {
             param1 = it.getString(ARG_PARAM1)
@@ -64,7 +76,6 @@ class Tab1 : Fragment(), ProfileAdapter.OnItemClickListener {
         super.onViewCreated(view, savedInstanceState)
 
         val rv_profile = view.findViewById<RecyclerView>(R.id.rv_profile)
-        val profileAllData : MutableList<Profile> = mutableListOf()
 
         val context = context ?:return
         val jsonUtility = JsonUtility(context)
@@ -127,6 +138,39 @@ class Tab1 : Fragment(), ProfileAdapter.OnItemClickListener {
         profileAdapter.setOnItemClickListener(this)
     }
 
+    private fun updateRecyclerView() {
+
+        profileAllData.clear()
+
+        // JSON 파일 다시 읽기
+        val context = context ?:return
+        val jsonUtility = JsonUtility(context)
+
+        val profiles = jsonUtility.readProfileData("data_user.json").toMutableList()
+
+        profiles.forEach{
+            profileAllData.add(it)
+        }
+        val profileAdapter = ProfileAdapter(profileAllData)
+        val rv_profile = view?.findViewById<RecyclerView>(R.id.rv_profile)
+        rv_profile?.adapter = profileAdapter
+//        context?.let {
+//            rv_profile?.layoutManager = LinearLayoutManager(it)
+//            rv_profile?.addItemDecoration(VerticalItemDecorator(10))
+//        }
+        this@Tab1.profileAdapter = ProfileAdapter(profileAllData)
+        // RecyclerView 아이템 클릭 리스너 설정
+        profileAdapter.setOnItemClickListener(this)
+        Log.d("updateRecyclerView ", profileAllData.toString())
+        profileAdapter.notifyDataSetChanged()
+        Log.d("notifyDataSetChanged", "")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        updateRecyclerView()
+    }
+
     override fun onItemClick(position: Int) {
 
         val selectedProfile = profileAdapter.profileList[position]
@@ -141,6 +185,11 @@ class Tab1 : Fragment(), ProfileAdapter.OnItemClickListener {
         }
         startActivity(tabIntent)
     }
+
+//    private fun updateRecyclerView() {
+//        val rv_profile = view?.findViewById<RecyclerView>(R.id.rv_profile)
+//        rv_profile?.adapter?.notifyDataSetChanged()
+//    }
 
     // 키보드 보여주기
     private fun showKeyboard(view: View) {
@@ -167,6 +216,18 @@ class JsonUtility(private val context: Context) {
     fun <T> parseJson(jsonData: String, clazz: Type): T {
         val gson = Gson()
         return gson.fromJson(jsonData, clazz)
+    }
+
+    fun readProfileData(fileName: String): List<Profile> {
+        val file = File(context.filesDir, fileName)
+        if (file.exists()) {
+            val jsonData = file.readText()
+            val profileType: Type = object : TypeToken<List<Profile>>() {}.type
+
+            return Gson().fromJson(jsonData, profileType) ?: emptyList()
+        } else {
+            return emptyList()
+        }
     }
 
     fun appendPhotoJson(fileName: String, newData: PhotoData){

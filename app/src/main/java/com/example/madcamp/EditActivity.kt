@@ -1,5 +1,7 @@
 package com.example.madcamp
 
+import android.annotation.SuppressLint
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
@@ -9,6 +11,7 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import org.json.JSONArray
 import org.json.JSONException
@@ -78,6 +81,7 @@ class EditActivity : AppCompatActivity() {
         dialog.show()
     }
 
+    @SuppressLint("LongLogTag")
     private fun deleteProfile() {
         Log.d("deleteProfile", "deleteProfile")
         if (profilePosition != -1) {
@@ -91,10 +95,16 @@ class EditActivity : AppCompatActivity() {
             val updatedProfiles = parseJson(updatedProfilesJson)
             Log.d("Delete Completed, ", updatedProfilesJson)
             // 어댑터 업데이트
-            profileAdapter.updateData(updatedProfiles)
+//            profileAdapter.updateData(updatedProfiles)
+//            Log.d("profileAdapter.updateData", updatedProfilesJson)
 
-            // 삭제 후 액티비티 종료
+            // 삭제된 정보를 Tab1화면으로 전달하고, 액티비티 시작
+            val intent = Intent(this, MainActivity::class.java)
+//            intent.putExtra("deletedPosition", profilePosition)
+            startActivity(intent)
+
             finish()
+
         }
     }
 
