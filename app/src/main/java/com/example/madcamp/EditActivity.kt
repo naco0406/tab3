@@ -24,7 +24,7 @@ class EditActivity : AppCompatActivity() {
         setContentView(R.layout.activity_edit)
 
         // Intent에서 전달된 데이터 받기
-        val id = intent.getStringExtra("id")
+        val id = intent.getLongExtra("id", -1)
         Log.d("Intent_id", id.toString())
         val name = intent.getStringExtra("name")
         val phone = intent.getStringExtra("phone")
@@ -38,9 +38,9 @@ class EditActivity : AppCompatActivity() {
         val saveButton = findViewById<Button>(R.id.saveButton)
         val deleteButton = findViewById<Button>(R.id.deleteButton)
 
-        textViewId.text = id
+//        textViewId.text = id.toString()
         // 이전 화면에서 선택된 프로필의 위치
-        profilePosition = intent.getIntExtra("id", -1)
+        profilePosition = intent.getLongExtra("id", -1).toInt()
 
         editTextViewName.text = Editable.Factory.getInstance().newEditable(name)
         editTextViewPhone.text = Editable.Factory.getInstance().newEditable(phone)
@@ -140,11 +140,11 @@ class EditActivity : AppCompatActivity() {
         try {
             val profilesArray = JSONArray(profilesJsonString)
 
-
             for (i in profilesArray.length() -1 downTo 0) {
                 val jsonObject = profilesArray.getJSONObject(i)
-                if (jsonObject.getInt("id").toLong() == position) {
+                if (jsonObject.getLong("id") == position) {
                     profilesArray.remove(i)
+                    Log.d("deleteProfile", "deletedProfile: $profilesArray")
                     return profilesArray.toString()
                 }
             }
