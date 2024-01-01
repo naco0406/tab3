@@ -77,7 +77,7 @@ class EditActivity : AppCompatActivity() {
         // 프로필 정보 업데이트
         val index = profiles.indexOfFirst { it.id == id }
         if (index != -1) {
-            profiles[index] = Profile(id, name, phone, imageUrl)
+            profiles[index] = Profile(id, imageUrl, name, phone)
             jsonUtility.updateProfileDataJson("data_user.json", profiles[index])
         }
 
