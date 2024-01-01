@@ -39,7 +39,7 @@ class Tab1 : Fragment(), ProfileAdapter.OnItemClickListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        JsonUtility(requireContext()).copyFileToInternalStorage("data_sample_user.json", "data_user.json")
+        JsonUtility(requireContext()).copyFileToInternalStorage("data_sample_user.json", "data_user.json")
 //        val users = JsonUtility(requireContext()).readPhotoData("data_user.json")
 //        users.forEach {
 //
@@ -69,7 +69,8 @@ class Tab1 : Fragment(), ProfileAdapter.OnItemClickListener {
         val context = context ?:return
         val jsonUtility = JsonUtility(context)
         try {
-            val jsonData = jsonUtility.readJson("data_sample_user.json")
+//            val jsonData = jsonUtility.readJson("data_sample_user.json")
+            val jsonData = jsonUtility.readJson("data_sample_user.json").toString()
             val profileType: Type = object: TypeToken<List<Profile>>() {}.type
             val profiles = jsonUtility.parseJson<List<Profile>>(jsonData, profileType)
 
@@ -129,15 +130,16 @@ class Tab1 : Fragment(), ProfileAdapter.OnItemClickListener {
     override fun onItemClick(position: Int) {
 
         val selectedProfile = profileAdapter.profileList[position]
+        Log.d("Tab1", "selectedProfile: $selectedProfile")
 
         // ProfileSubActivity로 이동하는 Intent 생성
-        val intent = Intent(context, ProfileSubActivity::class.java).apply {
-            putExtra("id", selectedProfile.id)
+        val tabIntent = Intent(requireContext(), ProfileSubActivity::class.java).apply {
+            putExtra("profileId", selectedProfile.id)
             putExtra("image", selectedProfile.image)
             putExtra("name", selectedProfile.name)
             putExtra("phone", selectedProfile.phone)
         }
-        startActivity(intent)
+        startActivity(tabIntent)
     }
 
     // 키보드 보여주기
@@ -152,25 +154,7 @@ class Tab1 : Fragment(), ProfileAdapter.OnItemClickListener {
         imm.hideSoftInputFromWindow(view.windowToken, 0)
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment Tab1.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            Tab1().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
-    }
+
 }
 
 class JsonUtility(private val context: Context) {
@@ -205,15 +189,20 @@ class JsonUtility(private val context: Context) {
     }
 
     fun copyFileToInternalStorage(fileName: String, toName: String) {
-        val assetManager = context.assets
-        val inputStream = assetManager.open(fileName)
-        val outputFile = File(context.filesDir, toName)
-        if (!outputFile.exists()) {
-            inputStream.use { input ->
-                outputFile.outputStream().use { output ->
-                    input.copyTo(output)
+        try {
+            val assetManager = context.assets
+            val inputStream = assetManager.open(fileName)
+            val outputFile = File(context.filesDir, toName)
+            if (!outputFile.exists()) {
+                inputStream.use { input ->
+                    outputFile.outputStream().use { output ->
+                        input.copyTo(output)
+                    }
                 }
             }
+        } catch (e: Exception) {
+            e.printStackTrace() // 로그에 오류 출력
+            // 오류 처리 (예: 사용자에게 알림)
         }
     }
     fun readPhotoData(fileName: String): List<PhotoData> {
@@ -227,6 +216,18 @@ class JsonUtility(private val context: Context) {
             emptyList()
         }
     }
+
+//    fun readProfileData(fileName: String): List<Profile> {
+//        val file = File(context.filesDir, fileName)
+//        return if (file.exists()) {
+//            val jsonData = file.readText()
+//            val profileType: Type = object : TypeToken<List<Profile>>() {}.type
+//            Gson().fromJson(jsonData, profileType)
+//        } else {
+//            Log.d("readProfileData", "No such file")
+//            emptyList()
+//        }
+//    }
 
     fun updateProfileDataJson(fileName: String, updateData: Profile) {
         try {

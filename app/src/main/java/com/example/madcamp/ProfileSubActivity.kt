@@ -31,14 +31,14 @@ class ProfileSubActivity : AppCompatActivity() {
         val btnEdit = findViewById<ImageButton>(R.id.edit)
 
         // Intent에서 전달된 데이터 받기
-        val userId = intent.getStringExtra("id")
-        Log.d("ProfileSubActivity_id", userId.toString())
+        val profileId = intent.getLongExtra("profileId", -1)
+        Log.d("ProfileSubActivity_id", profileId.toString())
         val name = intent.getStringExtra("name")
         val phone = intent.getStringExtra("phone")
         val imageUrl = intent.getStringExtra("image")
 
         // 받은 데이터로 View 업데이트
-        textViewId.text = userId
+//        textViewId.text = profileId
         textViewName.text = name
         textViewPhone.text = phone
 
@@ -95,7 +95,7 @@ class ProfileSubActivity : AppCompatActivity() {
             val editIntent = Intent(this, EditActivity::class.java)
 
             // 현재 사용자 정보를 Intent에 추가
-            editIntent.putExtra("id", userId)
+            editIntent.putExtra("id", profileId)
             editIntent.putExtra("name", name)
             editIntent.putExtra("phone", phone)
             editIntent.putExtra("image", imageUrl)
