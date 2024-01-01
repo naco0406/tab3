@@ -1,5 +1,6 @@
 [
   {
+    "title": "choonsik_1",
     "place": "파리",
     "timestamp": "2023-12-30T05:45:29Z",
     "star": 5,
@@ -11,6 +12,7 @@
     "uri": "image_choonsik1"
   },
   {
+    "title": "choonsik_2",
     "place": "파리",
     "timestamp": "2023-12-29T04:45:29Z",
     "star": 1,
@@ -21,6 +23,7 @@
     "uri": "image_choonsik2"
   },
   {
+    "title": "choonsik_3",
     "place": "뉴욕",
     "timestamp": "2023-12-28T03:45:29Z",
     "star": 5,
@@ -31,6 +34,7 @@
     "uri": "image_choonsik3"
   },
   {
+    "title": "choonsik_4",
     "place": "파리",
     "timestamp": "2023-12-27T02:45:29Z",
     "star": 5,
@@ -41,6 +45,7 @@
     "uri": "image_choonsik4"
   },
   {
+    "title": "choonsik_5",
     "place": "파리",
     "timestamp": "2023-12-26T01:45:29Z",
     "star": 5,
@@ -52,6 +57,7 @@
     "uri": "image_choonsik5"
   },
   {
+    "title": "cat1",
     "place": "파리",
     "timestamp": "2023-12-25T00:45:29Z",
     "star": 4,
@@ -62,6 +68,7 @@
     "uri": "image_cat1"
   },
   {
+    "title": "cat2",
     "place": "서울",
     "timestamp": "2023-12-23T23:45:29Z",
     "star": 3,
@@ -73,6 +80,7 @@
     "uri": "image_cat2"
   },
   {
+    "title": "cat3",
     "place": "파리",
     "timestamp": "2023-12-22T22:45:29Z",
     "star": 3,
@@ -84,6 +92,7 @@
     "uri": "image_cat3"
   },
   {
+    "title": "cat4",
     "place": "서울",
     "timestamp": "2023-12-21T21:45:29Z",
     "star": 4,
@@ -94,6 +103,7 @@
     "uri": "image_cat4"
   },
   {
+    "title": "cat5",
     "place": "서울",
     "timestamp": "2023-12-20T20:45:29Z",
     "star": 3,

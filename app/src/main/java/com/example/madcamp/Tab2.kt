@@ -12,8 +12,14 @@ import android.widget.ImageView
 import android.app.Dialog
 import android.content.Context
 import android.content.pm.PackageManager
+import android.location.Geocoder
+import android.location.Location
+import android.location.LocationListener
+import android.location.LocationManager
 import android.net.Uri
 import android.os.Environment
+import android.os.Handler
+import android.os.Looper
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
@@ -45,6 +51,7 @@ import java.util.Date
 import java.util.Locale
 
 data class PhotoData(
+    val title: String,
     val place: String,
     val timestamp: Timestamp,
     val star: Int,
@@ -67,6 +74,14 @@ class Tab2 : Fragment() {
     private var selectedProfiles: List<Profile> = listOf()
     private var placeList: MutableList<String>? = mutableListOf()
     private var selectedPlace: String = "모두"
+
+    private lateinit var locationManager: LocationManager
+    private lateinit var locationListener: LocationListener
+    private var currentLocation: Location? = null
+    private var currentCity: String? = null
+    private var currentCountry: String? = null
+    private var locationLoaded: Boolean = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         JsonUtility(requireContext()).copyFileToInternalStorage("data_sample_image.json", "data_image.json")
@@ -80,6 +95,9 @@ class Tab2 : Fragment() {
         if (context?.let { ContextCompat.checkSelfPermission(it, Manifest.permission.READ_EXTERNAL_STORAGE) } != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 100)
         }
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 100)
+        }
 
         takePictureLauncher = registerForActivityResult(ActivityResultContracts.TakePicture()){success ->
             if (success) {
@@ -91,6 +109,39 @@ class Tab2 : Fragment() {
             }
         }
 
+        locationManager = requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
+
+        // LocationListener 구현
+        locationListener = LocationListener { location ->
+            val latitude = location.latitude
+            val longitude = location.longitude
+//            Log.d("GPS Location2", "Latitude: $latitude, Longitude: $longitude")
+            // 여기에 위치 정보를 사용한 추가 작업을 수행합니다.
+            val geocoder = Geocoder(context, Locale.KOREA) // 한국어로 설정
+            try {
+                val addresses = geocoder.getFromLocation(latitude, longitude, 1)
+                if (addresses.isNotEmpty()) {
+                    val address = addresses[0]
+                    val city = address.locality // 도시
+                    val country = address.countryName // 국가
+//                    Log.d("Geocoder", "City: $city, Country: $country")
+                    currentCity = city
+                    currentCountry = country
+
+                    // 여기에 위치 정보를 사용한 추가 작업을 수행합니다.
+                }
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+        }
+
+        requestLocationUpdates(locationListener)
+    }
+
+    private fun requestLocationUpdates(locationListener: LocationListener) {
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0f, locationListener)
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -104,6 +155,26 @@ class Tab2 : Fragment() {
 
         loadProfileData()
         setupSpinner()
+
+        val gpsButton: Button = view.findViewById(R.id.gpsButton)
+        gpsButton.setOnClickListener {
+            //here
+            requestLocationUpdates(locationListener)
+            currentLocation?.let {
+                if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                    locationManager.requestSingleUpdate(
+                        LocationManager.GPS_PROVIDER,
+                        LocationListener { location ->
+                            // 현재 위치 정보 사용
+                            val latitude = location.latitude
+                            val longitude = location.longitude
+                            Log.d("GPS Location", "Latitude: $latitude, Longitude: $longitude")
+                        },
+                        null
+                    )
+                }
+            }
+        }
 
         val fab: FloatingActionButton = view.findViewById(R.id.fab)
         fab.setOnClickListener {
@@ -122,6 +193,7 @@ class Tab2 : Fragment() {
         val gridLayout: GridLayout = view.findViewById(R.id.gridview)
         photoAllData.forEachIndexed { index, photoData ->
             appendPlace(photoData.place)
+            val title = photoData.title
             val place = photoData.place
             val timestamp = photoData.timestamp
             val star = photoData.star
@@ -130,7 +202,7 @@ class Tab2 : Fragment() {
             val uri = photoData.uri
             val imageView = ImageView(context).apply {
                 setOnClickListener {
-                    showImageModal(uri, type, place, timestamp, star, people)
+                    showImageModal(uri, type, title, place, timestamp, star, people)
                 }
 //                background = ContextCompat.getDrawable(context, R.drawable.profile_image_rounded_corner)
 
@@ -205,11 +277,12 @@ class Tab2 : Fragment() {
         })
     }
 
-    private fun showImageModal(uri: String, type: String, place: String, timestamp: Timestamp, star: Int, people: List<String>){
+    private fun showImageModal(uri: String, type: String, title: String, place: String, timestamp: Timestamp, star: Int, people: List<String>){
         val dialog = Dialog(requireContext())
         dialog.setContentView(R.layout.dialog_image) // 별도의 레이아웃 파일
         val modalImageView = dialog.findViewById<ImageView>(R.id.dialogImageView)
         val modalTextView = dialog.findViewById<TextView>(R.id.dialogTextView)
+        val modalTitleTextView = dialog.findViewById<TextView>(R.id.dialogTitleTextView)
         if (type == "internal"){
             val imageId = context?.resources?.getIdentifier(uri, "drawable", requireContext().packageName)
             Log.d("Image Loader", "Image Uri from JSON: $imageId")
@@ -226,6 +299,7 @@ class Tab2 : Fragment() {
             error("Invalid Image Type")
         }
 
+        modalTitleTextView.setText(title)
         val modalText = modalDataToText(place, timestamp, star, people)
 //        Log.d("Modal", "Modal Text: $modalText")
         modalTextView.setText(modalText)
@@ -290,7 +364,8 @@ class Tab2 : Fragment() {
             Log.d("InputText", "Entered text: $inputText")
 
             val newPhotoData = PhotoData(
-                place = inputText,
+                title = inputText,
+                place = "$currentCity, $currentCountry",
                 timestamp = Timestamp(System.currentTimeMillis()),
                 star = inputRating,
                 people = peopleNames,
@@ -339,7 +414,7 @@ class Tab2 : Fragment() {
 
             val imageView = ImageView(context).apply {
                 setOnClickListener {
-                    showImageModal(photoData.uri, photoData.type, photoData.place, photoData.timestamp, photoData.star, photoData.people)
+                    showImageModal(photoData.uri, photoData.type, photoData.title, photoData.place, photoData.timestamp, photoData.star, photoData.people)
                 }
 //                background = ContextCompat.getDrawable(context, R.drawable.profile_image_rounded_corner)
                 layoutParams = GridLayout.LayoutParams().apply {

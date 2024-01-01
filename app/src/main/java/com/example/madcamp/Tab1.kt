@@ -278,37 +278,73 @@ class JsonUtility(private val context: Context) {
         }
     }
 
-//    fun readProfileData(fileName: String): List<Profile> {
-//        val file = File(context.filesDir, fileName)
-//        return if (file.exists()) {
-//            val jsonData = file.readText()
-//            val profileType: Type = object : TypeToken<List<Profile>>() {}.type
-//            Gson().fromJson(jsonData, profileType)
-//        } else {
-//            Log.d("readProfileData", "No such file")
-//            emptyList()
+    fun readProfileData(fileName: String): List<Profile> {
+        val file = File(context.filesDir, fileName)
+        if (file.exists()) {
+            val jsonData = file.readText()
+            val profileType: Type = object : TypeToken<List<Profile>>() {}.type
+            // Gson().fromJson의 결과가 null일 수 있으므로, null 확인 필요
+            return Gson().fromJson(jsonData, profileType) ?: emptyList()
+        } else {
+            Log.d("readProfileData", "No such file")
+            return emptyList()
+        }
+    }
+
+
+    //    fun updateProfileDataJson(fileName: String, updateData: Profile) {
+//        try {
+//            val file = File(context.filesDir, fileName)
+//            val data: MutableList<Profile>
+//
+//            if (file.exists()) {
+//                val jsonData = file.readText();
+//                // gson으로 json데이터를 List<Profile>로 파싱
+//                val profileType: Type = object : TypeToken<List<Profile>>() {}.type
+//                data = Gson().fromJson(jsonData, profileType)
+//            } else {
+//                data = mutableListOf()
+//            }
+//            // updateData 추가하고 파일에 쓰기
+//            data.add(updateData)
+//            file.writeText(Gson().toJson(data))
+//        } catch (e: Exception) {
+//            e.printStackTrace()
 //        }
 //    }
-
-    fun updateProfileDataJson(fileName: String, updateData: Profile) {
+    fun updateProfileDataJson(fileName: String, updatedProfile: Profile) {
         try {
             val file = File(context.filesDir, fileName)
-            val data: MutableList<Profile>
+            val profiles: MutableList<Profile>
+            Log.d("updateProfile","$file")
 
             if (file.exists()) {
-                val jsonData = file.readText();
-                // gson으로 json데이터를 List<Profile>로 파싱
-                val profileType: Type = object : TypeToken<List<Profile>>() {}.type
-                data = Gson().fromJson(jsonData, profileType)
+                val jsonData = file.readText()
+                val profileType = object : TypeToken<List<Profile>>() {}.type
+                profiles = Gson().fromJson(jsonData, profileType)
+                Log.d("updateProfile","$profiles")
             } else {
-                data = mutableListOf()
+                profiles = mutableListOf()
             }
-            // updateData 추가하고 파일에 쓰기
-            data.add(updateData)
-            file.writeText(Gson().toJson(data))
+
+            // 특정 id를 가진 프로필 찾아서 업데이트
+            val index = profiles.indexOfFirst { it.id == updatedProfile.id }
+            if (index != -1) {
+                profiles[index] = updatedProfile
+                Log.d("updateProfile","$updatedProfile")
+            } else {
+                // 프로필이 존재하지 않는 경우 새로 추가
+                profiles.add(updatedProfile)
+            }
+
+            // 수정된 프로필 리스트를 JSON으로 변환하여 파일에 저장
+            Log.d("updateProfile","$profiles")
+            file.writeText(Gson().toJson(profiles))
+            Log.d("updateProfile","Gson")
         } catch (e: Exception) {
             e.printStackTrace()
         }
     }
+
 
 }
