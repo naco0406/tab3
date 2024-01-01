@@ -53,16 +53,36 @@ class EditActivity : AppCompatActivity() {
             .into(editImageView)
 
         saveButton.setOnClickListener {
-            val inputName = editTextViewName.text.toString()
-            val inputPhone = editTextViewPhone.text.toString()
-
-            // 저장
+            val updatedName = editTextViewName.text.toString()
+            val updatedPhone = editTextViewPhone.text.toString()
+            Log.d("updateProfile", "$updatedName")
+            // 프로필 정보 업데이트
+            if (imageUrl != null) {
+                Log.d("updateProfile", "Attempt to update Profile")
+                updateProfile(id, updatedName, updatedPhone, imageUrl)
+            }
 
         }
 
         deleteButton.setOnClickListener {
             showDeleteConfirmDialog()
         }
+    }
+
+    private fun updateProfile(id: Long, name: String, phone: String, imageUrl: String) {
+        // JSON 파일 읽기
+        val jsonUtility = JsonUtility(this)
+        val profiles = jsonUtility.readProfileData("data_user.json").toMutableList()
+        Log.d("updateProfile", "$profiles")
+        // 프로필 정보 업데이트
+        val index = profiles.indexOfFirst { it.id == id }
+        if (index != -1) {
+            profiles[index] = Profile(id, name, phone, imageUrl)
+            jsonUtility.updateProfileDataJson("data_user.json", profiles[index])
+        }
+
+        // 액티비티 종료
+        finish()
     }
 
     private fun showDeleteConfirmDialog() {
@@ -186,4 +206,6 @@ class EditActivity : AppCompatActivity() {
 //        dialog.show()
 //    }
 
+
 }
+

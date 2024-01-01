@@ -12,6 +12,10 @@ import android.widget.ImageView
 import android.app.Dialog
 import android.content.Context
 import android.content.pm.PackageManager
+import android.location.Geocoder
+import android.location.Location
+import android.location.LocationListener
+import android.location.LocationManager
 import android.net.Uri
 import android.os.Environment
 import android.widget.AdapterView
@@ -67,6 +71,14 @@ class Tab2 : Fragment() {
     private var selectedProfiles: List<Profile> = listOf()
     private var placeList: MutableList<String>? = mutableListOf()
     private var selectedPlace: String = "모두"
+
+    private lateinit var locationManager: LocationManager
+    private lateinit var locationListener: LocationListener
+    private var currentLocation: Location? = null
+    private var currentCity: String? = null
+    private var currentCountry: String? = null
+    private var locationLoaded: Boolean = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         JsonUtility(requireContext()).copyFileToInternalStorage("data_sample_image.json", "data_image.json")
@@ -80,6 +92,9 @@ class Tab2 : Fragment() {
         if (context?.let { ContextCompat.checkSelfPermission(it, Manifest.permission.READ_EXTERNAL_STORAGE) } != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 100)
         }
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 100)
+        }
 
         takePictureLauncher = registerForActivityResult(ActivityResultContracts.TakePicture()){success ->
             if (success) {
@@ -91,6 +106,43 @@ class Tab2 : Fragment() {
             }
         }
 
+        locationManager = requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
+
+        // LocationListener 구현
+        locationListener = LocationListener { location ->
+            if (locationLoaded) {
+                val latitude = location.latitude
+                val longitude = location.longitude
+                Log.d("GPS Location2", "Latitude: $latitude, Longitude: $longitude")
+                // 여기에 위치 정보를 사용한 추가 작업을 수행합니다.
+                val geocoder = Geocoder(context, Locale.KOREA) // 한국어로 설정
+                try {
+                    val addresses = geocoder.getFromLocation(latitude, longitude, 1)
+                    if (addresses.isNotEmpty()) {
+                        val address = addresses[0]
+                        val city = address.locality // 도시
+                        val country = address.countryName // 국가
+                        Log.d("Geocoder", "City: $city, Country: $country")
+                        currentCity = city
+                        currentCountry = country
+
+                        // 여기에 위치 정보를 사용한 추가 작업을 수행합니다.
+                    }
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                }
+
+                // 필요한 작업을 수행한 후, locationLoaded를 false로 설정하여 추가 업데이트 방지
+                locationLoaded = false
+            }
+        }
+
+    }
+
+    private fun requestLocationUpdates(locationListener: LocationListener) {
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0f, locationListener)
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -104,6 +156,27 @@ class Tab2 : Fragment() {
 
         loadProfileData()
         setupSpinner()
+
+        val gpsButton: Button = view.findViewById(R.id.gpsButton)
+        gpsButton.setOnClickListener {
+            //here
+            locationLoaded = true
+            requestLocationUpdates(locationListener)
+            currentLocation?.let {
+                if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                    locationManager.requestSingleUpdate(
+                        LocationManager.GPS_PROVIDER,
+                        LocationListener { location ->
+                            // 현재 위치 정보 사용
+                            val latitude = location.latitude
+                            val longitude = location.longitude
+                            Log.d("GPS Location", "Latitude: $latitude, Longitude: $longitude")
+                        },
+                        null
+                    )
+                }
+            }
+        }
 
         val fab: FloatingActionButton = view.findViewById(R.id.fab)
         fab.setOnClickListener {
@@ -234,6 +307,8 @@ class Tab2 : Fragment() {
 
     lateinit var currentPhotoPath: String
     private fun dispatchTakePictureIntent() {
+        Log.d("PictureIntent", "GPS ON")
+        locationLoaded = true
         Log.d("PictureIntent", "Take Picture")
         val photoFile: File? = try {
             createImageFile()
@@ -290,7 +365,7 @@ class Tab2 : Fragment() {
             Log.d("InputText", "Entered text: $inputText")
 
             val newPhotoData = PhotoData(
-                place = inputText,
+                place = "$currentCity, $currentCountry",
                 timestamp = Timestamp(System.currentTimeMillis()),
                 star = inputRating,
                 people = peopleNames,
