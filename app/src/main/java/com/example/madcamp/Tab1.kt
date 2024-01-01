@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import android.widget.Button
 import android.widget.ImageView
 import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -38,6 +39,12 @@ class Tab1 : Fragment(), ProfileAdapter.OnItemClickListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+//        JsonUtility(requireContext()).copyFileToInternalStorage("data_sample_user.json", "data_user.json")
+//        val users = JsonUtility(requireContext()).readPhotoData("data_user.json")
+//        users.forEach {
+//
+//        }
+
         arguments?.let {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
@@ -62,7 +69,7 @@ class Tab1 : Fragment(), ProfileAdapter.OnItemClickListener {
         val context = context ?:return
         val jsonUtility = JsonUtility(context)
         try {
-            val jsonData = jsonUtility.readJson("test.json")
+            val jsonData = jsonUtility.readJson("data_sample_user.json")
             val profileType: Type = object: TypeToken<List<Profile>>() {}.type
             val profiles = jsonUtility.parseJson<List<Profile>>(jsonData, profileType)
 
@@ -85,6 +92,11 @@ class Tab1 : Fragment(), ProfileAdapter.OnItemClickListener {
 //            profileAdapter.addItemDecoration(it, rv_profile)
         }
         profileAdapter.notifyDataSetChanged()
+
+//        val deleteButton = view.findViewById<Button>(R.id.deleteButton)
+//        deleteButton.setOnClickListener {
+//
+//        }
 
         // SearchView에 포커스 설정
         val searchView = view.findViewById<androidx.appcompat.widget.SearchView>(R.id.searchView)
@@ -112,7 +124,7 @@ class Tab1 : Fragment(), ProfileAdapter.OnItemClickListener {
 
         // RecyclerView 아이템 클릭 리스너 설정
         profileAdapter.setOnItemClickListener(this)
-}
+    }
 
     override fun onItemClick(position: Int) {
 
@@ -120,6 +132,7 @@ class Tab1 : Fragment(), ProfileAdapter.OnItemClickListener {
 
         // ProfileSubActivity로 이동하는 Intent 생성
         val intent = Intent(context, ProfileSubActivity::class.java).apply {
+            putExtra("id", selectedProfile.id)
             putExtra("image", selectedProfile.image)
             putExtra("name", selectedProfile.name)
             putExtra("phone", selectedProfile.phone)
@@ -211,6 +224,27 @@ class JsonUtility(private val context: Context) {
         } else {
             Log.d("readPhotoData", "No such file")
             emptyList()
+        }
+    }
+
+    fun updateProfileDataJson(fileName: String, updateData: Profile) {
+        try {
+            val file = File(context.filesDir, fileName)
+            val data: MutableList<Profile>
+
+            if (file.exists()) {
+                val jsonData = file.readText();
+                // gson으로 json데이터를 List<Profile>로 파싱
+                val profileType: Type = object : TypeToken<List<Profile>>() {}.type
+                data = Gson().fromJson(jsonData, profileType)
+            } else {
+                data = mutableListOf()
+            }
+            // updateData 추가하고 파일에 쓰기
+            data.add(updateData)
+            file.writeText(Gson().toJson(data))
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 

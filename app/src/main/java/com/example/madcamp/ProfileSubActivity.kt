@@ -11,8 +11,10 @@ import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.util.Log
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
+import org.w3c.dom.Text
 
 class ProfileSubActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -20,18 +22,23 @@ class ProfileSubActivity : AppCompatActivity() {
         setContentView(R.layout.activity_profile_sub)
 
         val imageView = findViewById<ImageView>(R.id.userImage)
+        val textViewId = findViewById<TextView>(R.id.userId)
         val textViewName = findViewById<TextView>(R.id.textViewName)
         val textViewPhone = findViewById<TextView>(R.id.textViewPhone)
 
         val btnCall = findViewById<ImageButton>(R.id.call_phone)
         val btnMessage = findViewById<ImageButton>(R.id.call_message)
+        val btnEdit = findViewById<ImageButton>(R.id.edit)
 
         // Intent에서 전달된 데이터 받기
+        val userId = intent.getStringExtra("id")
+        Log.d("ProfileSubActivity_id", userId.toString())
         val name = intent.getStringExtra("name")
         val phone = intent.getStringExtra("phone")
         val imageUrl = intent.getStringExtra("image")
 
         // 받은 데이터로 View 업데이트
+        textViewId.text = userId
         textViewName.text = name
         textViewPhone.text = phone
 
@@ -72,16 +79,28 @@ class ProfileSubActivity : AppCompatActivity() {
                     Manifest.permission.SEND_SMS
             ) == PackageManager.PERMISSION_GRANTED
             ) {
-//                val intent = Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:${phoneNumber}"))
                 val intent = Intent(Intent.ACTION_VIEW, Uri.fromParts("sms", phoneNumber, null))
                 startActivity(intent)
             } else {
-//                Toast.makeText(this, "권한이 필요합니다", Toast.LENGTH_SHORT).show()
                 ActivityCompat.requestPermissions(
                     this, arrayOf(Manifest.permission.SEND_SMS),
                     SEND_SMS_PERMISSION_REQUEST_CODE
                 )
             }
+        }
+
+        //
+        btnEdit.setOnClickListener {
+
+            val editIntent = Intent(this, EditActivity::class.java)
+
+            // 현재 사용자 정보를 Intent에 추가
+            editIntent.putExtra("id", userId)
+            editIntent.putExtra("name", name)
+            editIntent.putExtra("phone", phone)
+            editIntent.putExtra("image", imageUrl)
+
+            startActivity(editIntent)
         }
     }
 

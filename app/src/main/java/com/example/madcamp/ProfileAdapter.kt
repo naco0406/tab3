@@ -1,6 +1,5 @@
 package com.example.madcamp
 
-import android.content.Context
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -10,6 +9,7 @@ import android.widget.Filter
 import android.widget.Filterable
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import org.w3c.dom.Text
@@ -20,6 +20,8 @@ class ProfileAdapter(var profileList: MutableList<Profile>):
 
     private var profileListAll: MutableList<Profile> = ArrayList(profileList)
     private var onItemClickListener: OnItemClickListener? = null
+
+    private var selectedProfilePosition: Int = -1
 
     init {
         sortByName()
@@ -66,7 +68,7 @@ class ProfileAdapter(var profileList: MutableList<Profile>):
     }
     override fun getItemCount(): Int {
        // Log.d("size", profileList.size.toString())
-        return profileList.count()
+        return profileList.size
     }
 
     interface OnItemClickListener {
@@ -77,6 +79,15 @@ class ProfileAdapter(var profileList: MutableList<Profile>):
         this.onItemClickListener = listener
     }
 
+    fun updateData(newProfileList: List<Profile>) {
+        profileList = newProfileList.toMutableList()
+        notifyDataSetChanged()
+    }
+
+
+    override fun getFilter(): Filter {
+        return profileFilter
+    }
 
     // 해당 뷰와 연결
     inner class ProfileViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -92,10 +103,6 @@ class ProfileAdapter(var profileList: MutableList<Profile>):
                 }
             }
         }
-    }
-
-    override fun getFilter(): Filter {
-        return profileFilter
     }
 
     private val profileFilter = object: Filter() {
@@ -126,12 +133,42 @@ class ProfileAdapter(var profileList: MutableList<Profile>):
         }
 
         // 필터링된 결과 어댑터에 적용하고, RecyclerView 갱신
+        // DiffUtil을 이용해 변경사항 계산, 어댑터에 반영
         override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
 
+            val newProfileList = results?.values as List<Profile>
+
+            val diffCallBack =  ProfileDiffCallBack(profileList, newProfileList)
+            val diffResult = DiffUtil.calculateDiff(diffCallBack)
+
             profileList.clear()
-            profileList.addAll(results?.values as List<Profile>)
+//            profileList.addAll(results?.values as List<Profile>)
+            profileList.addAll(newProfileList)
             sortByName()
-            notifyDataSetChanged()
+//            notifyDataSetChanged()
+            diffResult.dispatchUpdatesTo(this@ProfileAdapter)
+        }
+    }
+
+    // 이전 목록과 새로운 목록 간의 차이를 계산
+    private class ProfileDiffCallBack(
+        private val oldList: List<Profile>,
+        private val newList: List<Profile>
+    ) : DiffUtil.Callback() {
+
+        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            return oldList[oldItemPosition].id == newList[newItemPosition].id
+        }
+        override fun getOldListSize(): Int {
+            return oldList.size
+        }
+
+        override fun getNewListSize(): Int {
+            return newList.size
+        }
+
+        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            return oldList[oldItemPosition] == newList[newItemPosition]
         }
     }
 
