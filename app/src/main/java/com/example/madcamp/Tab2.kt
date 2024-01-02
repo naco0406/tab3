@@ -143,6 +143,7 @@ class Tab2 : Fragment() {
             val longitude = location.longitude
 //            Log.d("GPS Location2", "Latitude: $latitude, Longitude: $longitude")
             // 여기에 위치 정보를 사용한 추가 작업을 수행합니다.
+            val context = context ?: return@LocationListener
             val geocoder = Geocoder(context, Locale.KOREA) // 한국어로 설정
             try {
                 val addresses = geocoder.getFromLocation(latitude, longitude, 1)

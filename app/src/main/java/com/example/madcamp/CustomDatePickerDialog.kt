@@ -21,7 +21,7 @@ class CustomDatePickerDialog : DialogFragment() {
     }
 
     interface DatePickerDialogListener {
-        fun onDateSelected(year: Int, month: Int)
+        fun onToolbarDateSelected(year: Int, month: Int)
     }
 
     fun setDatePickerDialogListener(listener: DatePickerDialogListener) {
@@ -50,7 +50,7 @@ class CustomDatePickerDialog : DialogFragment() {
 
         builder.setView(view)
             .setPositiveButton("확인") { dialog, id ->
-                listener?.onDateSelected(numberPickerYear.value, numberPickerMonth.value)
+                listener?.onToolbarDateSelected(numberPickerYear.value, numberPickerMonth.value)
             }
             .setNegativeButton("취소") { dialog, id ->
                 getDialog()?.cancel()

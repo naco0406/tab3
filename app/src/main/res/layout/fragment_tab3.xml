@@ -57,7 +57,8 @@
                     android:id="@+id/buttonDateToday"
                     android:text="오늘"
                     android:background="@android:color/transparent"
-                    android:textSize="16dp"/>
+                    android:textSize="16dp"
+                    app:tint="@color/button_tint_selector"/>
                 <ImageButton
                     android:id="@+id/buttonDatePicker"
                     android:layout_width="wrap_content"
@@ -82,43 +83,23 @@
             app:mcv_headerTextAppearance="@null"
             app:mcv_dateTextAppearance="@style/CalenderViewDateCustomText"
             app:mcv_weekDayTextAppearance="@style/CalenderViewWeekCustomText"/>
-
-        <LinearLayout
-            android:id="@+id/bottom_sheet"
+        <com.example.madcamp.CustomScrollView
+            android:id="@+id/customScrollView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingTop="16dp"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
+            android:layout_height="match_parent"
             android:background="@drawable/bottom_rounded_corner"
             app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
-            <!-- 바텀 시트 내용 -->
-            <!-- 바텀 시트의 헤더 부분 -->
-            <TextView
+            <LinearLayout
+                android:id="@+id/bottom_sheet"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Header"
-                android:textAppearance="@style/TextAppearance.AppCompat.Large"/>
+                android:orientation="vertical"
+                android:paddingTop="16dp"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp">
 
-            <!-- 내용이 될 부분, 예를 들어 설명 텍스트 -->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="16dp"
-                android:text="Here is some content for the bottom sheet." />
-
-            <!-- 사용자 상호작용을 위한 버튼 -->
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Click Me" />
-
-            <!-- 리스트뷰나 리사이클러뷰 등의 추가적인 뷰 구성요소들을 여기에 추가할 수 있습니다. -->
-            <android.widget.Space
-                android:layout_width="match_parent"
-                android:layout_height="3000dp"/>
-        </LinearLayout>
+            </LinearLayout>
+        </com.example.madcamp.CustomScrollView>
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
 </FrameLayout>
