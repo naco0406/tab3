@@ -6,8 +6,10 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.util.Log
+import android.view.View
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
@@ -22,9 +24,35 @@ class EditActivity : AppCompatActivity() {
     private var profilePosition: Int = -1
     private lateinit var profileAdapter:ProfileAdapter
 
+    override fun onBackPressed() {
+        super.onBackPressed()
+        overridePendingTransition(0, 0)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit)
+        supportActionBar?.hide()
+
+        val backButton: ImageButton = findViewById(R.id.backButton)
+        backButton.setOnClickListener {
+            onBackPressed()
+        }
+
+        val backgroundImage = findViewById<ImageView>(R.id.backgroundUserImage)
+        val backgroundGradient = findViewById<View>(R.id.gradientView)
+        backgroundImage.post {
+            val width = backgroundImage.width // 가로 길이 가져오기
+            val params = backgroundImage.layoutParams
+            params.height = width // 세로 길이를 가로 길이와 동일하게 설정
+            backgroundImage.layoutParams = params // 레이아웃 파라미터 업데이트
+        }
+        backgroundGradient.post {
+            val width = backgroundGradient.width // 가로 길이 가져오기
+            val params = backgroundGradient.layoutParams
+            params.height = width // 세로 길이를 가로 길이와 동일하게 설정
+            backgroundGradient.layoutParams = params // 레이아웃 파라미터 업데이트
+        }
 
         // Intent에서 전달된 데이터 받기
         val id = intent.getLongExtra("id", -1)
@@ -33,13 +61,13 @@ class EditActivity : AppCompatActivity() {
         val phone = intent.getStringExtra("phone")
         val imageUrl = intent.getStringExtra("image")
 
-        val textViewId = findViewById<TextView>(R.id.userId)
+//        val textViewId = findViewById<TextView>(R.id.userId)
         val editTextViewName = findViewById<EditText>(R.id.editUserName)
         val editTextViewPhone = findViewById<EditText>(R.id.editPhone)
         val editImageView = findViewById<ImageView>(R.id.editUserImage)
 
         val saveButton = findViewById<Button>(R.id.saveButton)
-        val deleteButton = findViewById<Button>(R.id.deleteButton)
+        val deleteButton = findViewById<ImageButton>(R.id.deleteButton)
 
 //        textViewId.text = id.toString()
         // 이전 화면에서 선택된 프로필의 위치
@@ -50,10 +78,13 @@ class EditActivity : AppCompatActivity() {
 
         Glide.with(this)
             .load(imageUrl)
-            .override(100, 100)
-            .placeholder(R.drawable.ic_home)
-            .error(R.drawable.baseline_question_mark_24)
+            .circleCrop()
+            .placeholder(R.drawable.outline_image_24)
+            .error(R.drawable.outline_broken_image_24)
             .into(editImageView)
+        Glide.with(this)
+            .load(imageUrl)
+            .into(backgroundImage)
 
         saveButton.setOnClickListener {
             val updatedName = editTextViewName.text.toString()
@@ -84,7 +115,16 @@ class EditActivity : AppCompatActivity() {
             jsonUtility.updateProfileDataJson("data_user.json", profiles[index])
         }
 
-        // 액티비티 종료
+        val intent = Intent(this, ProfileSubActivity::class.java).apply {
+            putExtra("profileId", id)
+            putExtra("image", imageUrl)
+            putExtra("name", name)
+            putExtra("phone", phone)
+        }
+//            intent.putExtra("deletedPosition", profilePosition)
+        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+        startActivity(intent)
+        overridePendingTransition(0, 0)
         finish()
     }
 

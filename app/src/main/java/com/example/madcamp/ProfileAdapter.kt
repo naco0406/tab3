@@ -52,8 +52,8 @@ class ProfileAdapter(var profileList: MutableList<Profile>):
         Glide.with(holder.itemView.context)
             .load(profile.image)
             .override(100, 100)
-            .placeholder(R.drawable.ic_home)
-            .error(R.drawable.baseline_question_mark_24)
+            .placeholder(R.drawable.outline_image_24)
+            .error(R.drawable.outline_broken_image_24)
             .into(holder.rv_image)
 
 //        holder.rv_image.text = profile.image

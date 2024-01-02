@@ -8,14 +8,14 @@
 <!--    <color name="black">#FF000000</color>-->
     <color name="white">#FFFFFFFF</color>
   
-    <color name="key">#FF6200EE</color>
-    <color name="highlight">#FF12B886</color>
-    <color name="black">#FF212529</color>
-    <color name="light_gray">#FFF1F3F5</color>
-    <color name="gray">#FFCED4DA</color>
-    <color name="dark_gray">#FF868E96</color>
+    <color name="key">#F5400B</color>
+    <color name="black">#22242C</color>
+    <color name="light_gray">#EDEEF0</color>
+    <color name="gray">#CDCDCD</color>
+    <color name="dark_gray">#6D6E73</color>
     <color name="divider_color">#CCCCCC</color>
     <color name="background_color">#F9F9F9</color>
 
     <color name="Gold">#F4E665</color>
+
 </resources>

@@ -68,5 +68,14 @@
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
             </LinearLayout>
     </RelativeLayout>
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_profile"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="@dimen/fab_margin"
+        android:layout_marginBottom="64dp"
+        app:backgroundTint="@color/key"
+        app:srcCompat="@drawable/outline_person_add_24" />
 
 </FrameLayout>
