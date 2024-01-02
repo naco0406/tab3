@@ -12,14 +12,42 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.util.Log
+import android.view.View
+import android.widget.Button
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
+import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.request.RequestOptions
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import org.w3c.dom.Text
+import kotlin.properties.Delegates
 
 class ProfileSubActivity : AppCompatActivity() {
+    private var profileId by Delegates.notNull<Long>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_profile_sub)
+        supportActionBar?.hide()
+
+        val backButton: ImageButton = findViewById(R.id.backButton)
+        backButton.setOnClickListener {
+            onBackPressed()
+        }
+
+        val backgroundImage = findViewById<ImageView>(R.id.backgroundUserImage)
+        val backgroundGradient = findViewById<View>(R.id.gradientView)
+        backgroundImage.post {
+            val width = backgroundImage.width // 가로 길이 가져오기
+            val params = backgroundImage.layoutParams
+            params.height = width // 세로 길이를 가로 길이와 동일하게 설정
+            backgroundImage.layoutParams = params // 레이아웃 파라미터 업데이트
+        }
+        backgroundGradient.post {
+            val width = backgroundGradient.width // 가로 길이 가져오기
+            val params = backgroundGradient.layoutParams
+            params.height = width // 세로 길이를 가로 길이와 동일하게 설정
+            backgroundGradient.layoutParams = params // 레이아웃 파라미터 업데이트
+        }
 
         val imageView = findViewById<ImageView>(R.id.userImage)
         val textViewId = findViewById<TextView>(R.id.userId)
@@ -28,10 +56,10 @@ class ProfileSubActivity : AppCompatActivity() {
 
         val btnCall = findViewById<ImageButton>(R.id.call_phone)
         val btnMessage = findViewById<ImageButton>(R.id.call_message)
-        val btnEdit = findViewById<ImageButton>(R.id.edit)
+        val btnEdit = findViewById<Button>(R.id.edit)
 
         // Intent에서 전달된 데이터 받기
-        val profileId = intent.getLongExtra("profileId", -1)
+        profileId = intent.getLongExtra("profileId", -1)
         Log.d("ProfileSubActivity_id", profileId.toString())
         val name = intent.getStringExtra("name")
         val phone = intent.getStringExtra("phone")
@@ -44,10 +72,14 @@ class ProfileSubActivity : AppCompatActivity() {
 
         Glide.with(this)
             .load(imageUrl)
-            .override(100, 100)
-            .placeholder(R.drawable.ic_home)
-            .error(R.drawable.baseline_question_mark_24)
+            .circleCrop()
+            .placeholder(R.drawable.outline_image_24)
+            .error(R.drawable.outline_broken_image_24)
             .into(imageView)
+        Glide.with(this)
+            .load(imageUrl)
+            .into(backgroundImage)
+
 
         // 전화걸기
         btnCall.setOnClickListener {
@@ -100,7 +132,31 @@ class ProfileSubActivity : AppCompatActivity() {
             editIntent.putExtra("phone", phone)
             editIntent.putExtra("image", imageUrl)
 
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
             startActivity(editIntent)
+            overridePendingTransition(0, 0)
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        updateSubActivity()
+    }
+    private fun updateSubActivity() {
+
+        // JSON 파일 다시 읽기
+        val context = this
+        val jsonUtility = JsonUtility(context)
+        val profiles = jsonUtility.readProfileData("data_user.json").toMutableList()
+
+        val textViewName = findViewById<TextView>(R.id.textViewName)
+        val textViewPhone = findViewById<TextView>(R.id.textViewPhone)
+
+        profiles.forEach{
+            if (it.id == profileId){
+                textViewName.setText(it.name)
+                textViewPhone.setText(it.phone)
+            }
         }
     }
 

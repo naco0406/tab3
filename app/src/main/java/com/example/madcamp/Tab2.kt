@@ -67,6 +67,20 @@ class Tab2 : Fragment() {
         val rootView = view
         val gridLayout = rootView?.findViewById<GridLayout>(R.id.gridview)
         gridLayout?.requestLayout()
+        startLocationUpdates()
+    }
+    private fun startLocationUpdates() {
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0f, locationListener)
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        stopLocationUpdates()
+    }
+    private fun stopLocationUpdates() {
+        locationManager.removeUpdates(locationListener)
     }
 
     private lateinit var takePictureLauncher: ActivityResultLauncher<Uri>
@@ -89,14 +103,26 @@ class Tab2 : Fragment() {
         photos.forEach {
             appendPlace(it.place)
         }
-        if (context?.let { ContextCompat.checkSelfPermission(it, Manifest.permission.CAMERA) } != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.CAMERA), 100)
-        }
-        if (context?.let { ContextCompat.checkSelfPermission(it, Manifest.permission.READ_EXTERNAL_STORAGE) } != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 100)
-        }
-        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 100)
+//        if (context?.let { ContextCompat.checkSelfPermission(it, Manifest.permission.CAMERA) } != PackageManager.PERMISSION_GRANTED) {
+//            ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.CAMERA), 100)
+//        }
+//        if (context?.let { ContextCompat.checkSelfPermission(it, Manifest.permission.READ_EXTERNAL_STORAGE) } != PackageManager.PERMISSION_GRANTED) {
+//            ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 100)
+//        }
+//
+//        if (context?.let { ContextCompat.checkSelfPermission(it, Manifest.permission.ACCESS_FINE_LOCATION) } != PackageManager.PERMISSION_GRANTED) {
+//            ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 100)
+//        }
+
+        val permissions = arrayOf(
+            Manifest.permission.CAMERA,
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        )
+
+        // 권한 요청
+        if (!hasPermissions(permissions)) {
+            ActivityCompat.requestPermissions(requireActivity(), permissions, 100)
         }
 
         takePictureLauncher = registerForActivityResult(ActivityResultContracts.TakePicture()){success ->
@@ -131,11 +157,19 @@ class Tab2 : Fragment() {
                     // 여기에 위치 정보를 사용한 추가 작업을 수행합니다.
                 }
             } catch (e: IOException) {
-                e.printStackTrace()
+//                e.printStackTrace()
             }
         }
 
         requestLocationUpdates(locationListener)
+    }
+    private fun hasPermissions(permissions: Array<String>): Boolean {
+        permissions.forEach { permission ->
+            if (ContextCompat.checkSelfPermission(requireContext(), permission) != PackageManager.PERMISSION_GRANTED) {
+                return false
+            }
+        }
+        return true
     }
 
     private fun requestLocationUpdates(locationListener: LocationListener) {
@@ -156,28 +190,29 @@ class Tab2 : Fragment() {
         loadProfileData()
         setupSpinner()
 
-        val gpsButton: Button = view.findViewById(R.id.gpsButton)
-        gpsButton.setOnClickListener {
-            //here
-            requestLocationUpdates(locationListener)
-            currentLocation?.let {
-                if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                    locationManager.requestSingleUpdate(
-                        LocationManager.GPS_PROVIDER,
-                        LocationListener { location ->
-                            // 현재 위치 정보 사용
-                            val latitude = location.latitude
-                            val longitude = location.longitude
-                            Log.d("GPS Location", "Latitude: $latitude, Longitude: $longitude")
-                        },
-                        null
-                    )
-                }
-            }
-        }
+//        val gpsButton: Button = view.findViewById(R.id.gpsButton)
+//        gpsButton.setOnClickListener {
+//            //here
+//            requestLocationUpdates(locationListener)
+//            currentLocation?.let {
+//                if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+//                    locationManager.requestSingleUpdate(
+//                        LocationManager.GPS_PROVIDER,
+//                        LocationListener { location ->
+//                            // 현재 위치 정보 사용
+//                            val latitude = location.latitude
+//                            val longitude = location.longitude
+//                            Log.d("GPS Location", "Latitude: $latitude, Longitude: $longitude")
+//                        },
+//                        null
+//                    )
+//                }
+//            }
+//        }
 
         val fab: FloatingActionButton = view.findViewById(R.id.fab)
         fab.setOnClickListener {
+            requestLocationUpdates(locationListener)
             dispatchTakePictureIntent()
         }
 
@@ -239,15 +274,11 @@ class Tab2 : Fragment() {
     }
 
     private fun loadProfileData(){
-        val context = context ?: return
-        val jsonUtility = JsonUtility(context)
 
         try {
-            val jsonData = jsonUtility.readJson("data_sample_user.json")
-            val profileType: Type = object: TypeToken<List<Profile>>() {}.type
-            val profiles = jsonUtility.parseJson<List<Profile>>(jsonData, profileType)
+            val photoDataList = JsonUtility(requireContext()).readProfileData("data_user.json")
 
-            profileList = profiles
+            profileList = photoDataList
 
         } catch (e: Exception) {
             e.printStackTrace()

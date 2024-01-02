@@ -18,21 +18,13 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.io.File
 import java.lang.reflect.Type
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [Tab1.newInstance] factory method to
- * create an instance of this fragment.
- */
 class Tab1 : Fragment(), ProfileAdapter.OnItemClickListener {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
@@ -50,17 +42,30 @@ class Tab1 : Fragment(), ProfileAdapter.OnItemClickListener {
 //        users.forEach {
 //
 //        }
-        if (context?.let { ContextCompat.checkSelfPermission(it, Manifest.permission.READ_EXTERNAL_STORAGE) } != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 100)
-        }
-        if (context?.let { ContextCompat.checkSelfPermission(it, Manifest.permission.WRITE_EXTERNAL_STORAGE) } != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), 100)
-        }
+//        if (context?.let { ContextCompat.checkSelfPermission(it, Manifest.permission.READ_EXTERNAL_STORAGE) } != PackageManager.PERMISSION_GRANTED) {
+//            ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 100)
+//        }
+//        if (context?.let { ContextCompat.checkSelfPermission(it, Manifest.permission.WRITE_EXTERNAL_STORAGE) } != PackageManager.PERMISSION_GRANTED) {
+//            ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), 100)
+//        }
 
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
+        val permissions = arrayOf(
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+        )
+
+        // 권한 요청
+        if (!hasPermissions(permissions)) {
+            ActivityCompat.requestPermissions(requireActivity(), permissions, 100)
         }
+    }
+    private fun hasPermissions(permissions: Array<String>): Boolean {
+        permissions.forEach { permission ->
+            if (ContextCompat.checkSelfPermission(requireContext(), permission) != PackageManager.PERMISSION_GRANTED) {
+                return false
+            }
+        }
+        return true
     }
 
     override fun onCreateView(
@@ -105,10 +110,10 @@ class Tab1 : Fragment(), ProfileAdapter.OnItemClickListener {
         }
         profileAdapter.notifyDataSetChanged()
 
-//        val deleteButton = view.findViewById<Button>(R.id.deleteButton)
-//        deleteButton.setOnClickListener {
-//
-//        }
+        val fabProfile: FloatingActionButton = view.findViewById(R.id.fab_profile)
+        fabProfile.setOnClickListener {
+            // Profile Add Button
+        }
 
         // SearchView에 포커스 설정
         val searchView = view.findViewById<androidx.appcompat.widget.SearchView>(R.id.searchView)
@@ -278,18 +283,18 @@ class JsonUtility(private val context: Context) {
         }
     }
 
-    fun readProfileData(fileName: String): List<Profile> {
-        val file = File(context.filesDir, fileName)
-        if (file.exists()) {
-            val jsonData = file.readText()
-            val profileType: Type = object : TypeToken<List<Profile>>() {}.type
-            // Gson().fromJson의 결과가 null일 수 있으므로, null 확인 필요
-            return Gson().fromJson(jsonData, profileType) ?: emptyList()
-        } else {
-            Log.d("readProfileData", "No such file")
-            return emptyList()
-        }
-    }
+//    fun readProfileData(fileName: String): List<Profile> {
+//        val file = File(context.filesDir, fileName)
+//        if (file.exists()) {
+//            val jsonData = file.readText()
+//            val profileType: Type = object : TypeToken<List<Profile>>() {}.type
+//            // Gson().fromJson의 결과가 null일 수 있으므로, null 확인 필요
+//            return Gson().fromJson(jsonData, profileType) ?: emptyList()
+//        } else {
+//            Log.d("readProfileData", "No such file")
+//            return emptyList()
+//        }
+//    }
 
 
     //    fun updateProfileDataJson(fileName: String, updateData: Profile) {

@@ -18,6 +18,7 @@ import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.Spinner
 import android.widget.TextView
+import androidx.appcompat.widget.Toolbar
 import androidx.annotation.RequiresApi
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.prolificinteractive.materialcalendarview.CalendarDay
@@ -79,28 +80,6 @@ class Tab3 : Fragment(), CustomDatePickerDialog.DatePickerDialogListener {
         val tvYear = view?.findViewById<TextView>(R.id.calendarYear)
         tvYear?.text = "${year}"
 
-//        val spinnerDate = view.findViewById<Spinner>(R.id.spinnerDate)
-//        val years = (Calendar.getInstance().get(Calendar.YEAR) downTo 2000).toList()
-//        val months = (1..12).toList()
-//        val spinnerAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, years.map { year ->
-//            months.map { month ->
-//                "${year}년 ${month}월"
-//            }
-//        }.flatten())
-//        spinnerDate.adapter = spinnerAdapter
-//
-//        spinnerDate.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-//            override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
-//                val selectedDate = parent.getItemAtPosition(position) as String
-//                val year = selectedDate.substringBefore("년").toInt()
-//                val month = selectedDate.substringAfter("년 ").substringBefore("월").toInt() - 1
-//                val calendarDate = CalendarDay.from(year, month, 1)
-//                calendarView.setCurrentDate(calendarDate)
-//            }
-//
-//            override fun onNothingSelected(parent: AdapterView<*>) {}
-//        }
-
         val buttonOpenDatePicker = view.findViewById<ImageButton>(R.id.buttonDatePicker)
         buttonOpenDatePicker.setOnClickListener {
             val datePickerDialogFragment = CustomDatePickerDialog()
@@ -120,6 +99,7 @@ class Tab3 : Fragment(), CustomDatePickerDialog.DatePickerDialogListener {
         // 필요한 경우 바텀 시트 보여주기
         showBottomSheet()
 
+        val toolbar = view.findViewById<Toolbar>(R.id.toolbar)
         bottomSheetBehavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
             override fun onStateChanged(bottomSheet: View, newState: Int) {
                 when (newState) {
@@ -128,14 +108,19 @@ class Tab3 : Fragment(), CustomDatePickerDialog.DatePickerDialogListener {
                         calendarView.state().edit()
                             .setCalendarDisplayMode(CalendarMode.WEEKS)
                             .commit()
+                        toolbar.visibility = View.VISIBLE
                     }
                     BottomSheetBehavior.STATE_EXPANDED -> {
                         Log.d("bottomSheet", "Expanded")
+                        toolbar.visibility = View.GONE
+                    }
+                    BottomSheetBehavior.STATE_COLLAPSED -> {
+                        Log.d("bottomSheet", "Collapsed")
                         calendarView.state().edit()
                             .setCalendarDisplayMode(CalendarMode.MONTHS)
                             .commit()
+                        toolbar.visibility = View.VISIBLE
                     }
-                    BottomSheetBehavior.STATE_COLLAPSED -> Log.d("bottomSheet", "Collapsed")
                     // 기타 필요한 상태 처리
                 }
 
@@ -143,9 +128,9 @@ class Tab3 : Fragment(), CustomDatePickerDialog.DatePickerDialogListener {
 
             override fun onSlide(bottomSheet: View, slideOffset: Float) {
                 // 슬라이드 상태 변경시 처리
-                calendarView.state().edit()
-                    .setCalendarDisplayMode(CalendarMode.MONTHS)
-                    .commit()
+//                calendarView.state().edit()
+//                    .setCalendarDisplayMode(CalendarMode.MONTHS)
+//                    .commit()
             }
         })
     }

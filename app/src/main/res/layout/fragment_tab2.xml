@@ -42,11 +42,11 @@
 <!--                    android:text="Hello!"-->
 <!--                    android:textColor="@color/highlight"-->
 <!--                    android:textSize="20dp"/>-->
-                <Button
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/gpsButton"
-                    android:text="GPS"/>
+<!--                <Button-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:id="@+id/gpsButton"-->
+<!--                    android:text="GPS"/>-->
                 <Spinner
                     android:id="@+id/placeSpinner"
                     android:layout_width="wrap_content"
@@ -83,7 +83,7 @@
         android:layout_gravity="bottom|end"
         android:layout_marginEnd="@dimen/fab_margin"
         android:layout_marginBottom="64dp"
-        android:tint="@color/highlight"
-        app:srcCompat="@android:drawable/ic_input_add" />
+        app:backgroundTint="@color/key"
+        app:srcCompat="@drawable/outline_add_photo_alternate_24" />
 
 </FrameLayout>

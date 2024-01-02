@@ -1,6 +1,6 @@
 [
-  {"id": 1, "image": "https://search.pstatic.net/common?type=b&size=3000&quality=100&direct=true&src=http%3A%2F%2Fsstatic.naver.net%2Fpeople%2FprofileImg%2F008ac9a5-795e-4060-849d-4860af085cfe.jpg", "name": "민지", "phone": "010-0507-1111"},
-  {"id": 2,"image": "https://search.pstatic.net/common?type=b&size=3000&quality=100&direct=true&src=http%3A%2F%2Fsstatic.naver.net%2Fpeople%2FprofileImg%2F3bbd678a-8cea-45fb-86f0-92df62bf6006.jpg", "name": "해린", "phone": "010-0515-2222"},
-  {"id": 3,"image": "https://search.pstatic.net/common?type=b&size=3000&quality=100&direct=true&src=http%3A%2F%2Fsstatic.naver.net%2Fpeople%2FprofileImg%2F602f0e75-f047-40db-b42a-20e95c265966.jpg", "name": "하니", "phone": "010-1006-3333"},
-  {"id": 4, "image": "https://search.pstatic.net/common?type=b&size=3000&quality=100&direct=true&src=http%3A%2F%2Fsstatic.naver.net%2Fpeople%2FprofileImg%2F3c425d60-69b0-4f15-abd0-39d1da383435.jpg", "name": "혜인", "phone": "010-0421-4444"}
+  {"id": 1, "image": "https://i.postimg.cc/2SPffpxq/minji.jpg", "name": "민지", "phone": "010-0507-1111"},
+  {"id": 2,"image": "https://i.postimg.cc/PJcS8HJY/haerin.jpg", "name": "해린", "phone": "010-0515-2222"},
+  {"id": 3,"image": "https://i.postimg.cc/rmGTJhxD/hanni.jpg", "name": "하니", "phone": "010-1006-3333"},
+  {"id": 4, "image": "https://i.postimg.cc/8ctS8jyD/hyein.jpg", "name": "혜인", "phone": "010-0421-4444"}
 ]
