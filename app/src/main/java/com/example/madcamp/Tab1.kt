@@ -1,10 +1,14 @@
 package com.example.madcamp
 
 import android.Manifest
+import android.app.Activity.RESULT_OK
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -12,13 +16,17 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
+import android.widget.EditText
+import android.widget.ImageButton
 import android.widget.ImageView
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.SearchView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.bumptech.glide.Glide
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.io.File
@@ -30,8 +38,10 @@ class Tab1 : Fragment(), ProfileAdapter.OnItemClickListener {
     private var param1: String? = null
     private var param2: String? = null
 
-    lateinit var imageView: ImageView
     private lateinit var profileAdapter: ProfileAdapter
+    private lateinit var dialogView: View
+    private lateinit var userImage: ImageButton
+
     private var profileAllData: MutableList<Profile> = mutableListOf()
 
 
@@ -74,7 +84,34 @@ class Tab1 : Fragment(), ProfileAdapter.OnItemClickListener {
     ): View? {
         // Inflate the layout for this fragment
         val view =  inflater.inflate(R.layout.fragment_tab1, container, false)
+
+        dialogView = layoutInflater.inflate(R.layout.profile_add_dialog, null)
+        userImage = dialogView.findViewById(R.id.addUserImage)
         return view
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (resultCode == RESULT_OK && requestCode == 1) {
+            val imageUri: Uri? = data?.data
+
+            // Uri를 String으로 변환
+            val imagePath: String = imageUri?.toString() ?: ""
+
+            Log.d("onActivityResultFile", imagePath)
+
+            // Glide를 사용하여 이미지 로드
+            Glide.with(this)
+                .load(imagePath)
+                .placeholder(R.drawable.outline_image_24)
+                .error(R.drawable.outline_broken_image_24)
+                .into(userImage)
+
+            // setTag로 View에 추가정보를 저장
+            // 이미지의 uri를 객체에 연결된 추가정보로 저장.
+            userImage.setTag(R.id.addUserImage, imageUri)  // 추가
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -85,7 +122,6 @@ class Tab1 : Fragment(), ProfileAdapter.OnItemClickListener {
         val context = context ?:return
         val jsonUtility = JsonUtility(context)
         try {
-//            val jsonData = jsonUtility.readJson("data_sample_user.json")
             val jsonData = jsonUtility.readJson("data_sample_user.json").toString()
             val profileType: Type = object: TypeToken<List<Profile>>() {}.type
             val profiles = jsonUtility.parseJson<List<Profile>>(jsonData, profileType)
@@ -111,8 +147,82 @@ class Tab1 : Fragment(), ProfileAdapter.OnItemClickListener {
         profileAdapter.notifyDataSetChanged()
 
         val fabProfile: FloatingActionButton = view.findViewById(R.id.fab_profile)
+
+        dialogView = layoutInflater.inflate(R.layout.profile_add_dialog, null)
+        userImage = dialogView.findViewById<ImageButton>(R.id.addUserImage)
+        val userName = dialogView.findViewById<EditText>(R.id.addUserName).text
+        val userPhone = dialogView.findViewById<EditText>(R.id.addUserPhone).text
+
         fabProfile.setOnClickListener {
             // Profile Add Button
+            Log.d("fabProfile", "clicked")
+            Glide.with(this)
+                .load(R.drawable.image_cat1)  // 기본이미지
+                .placeholder(R.drawable.outline_image_24)
+                .error(R.drawable.outline_broken_image_24)
+//                .override(100, 100)
+                .into(userImage)
+
+            val alertDialog = android.app.AlertDialog.Builder(context)
+            alertDialog.setTitle("연락처 추가")
+                .setView(dialogView)
+                .setPositiveButton("저장",
+                    DialogInterface.OnClickListener { dialog, which ->
+                        Log.d("saveButton", "clicked")
+
+                        // dialog를 보여주기 전에 dialogView에 이미 존재하는 userImage를 찾아 제거.
+                        val existingUserImage = dialogView.findViewById<ImageButton>(R.id.addUserImage)
+                        if (existingUserImage.parent != null) {
+
+                            (existingUserImage.parent as ViewGroup).removeView(existingUserImage)
+                        }
+
+                        val ProfileList = JsonUtility(requireContext()).readProfileData("data_user.json")
+
+                        val newProfile = if (ProfileList.isNotEmpty()) {
+                            // 프로필이 하나 이상 있는 경우
+                            val lastProfileId = ProfileList.last().id
+                            Profile(
+                                id = lastProfileId + 1,
+//                                image = userImage.toString(),
+                                // ImageButton에 연결된 추가정보를 불러와 문자열로 변환
+                                // 선택한 이미지의 uri를 Profile 객체에 설정
+                                image = (userImage.getTag(R.id.addUserImage) as? Uri)?.toString() ?: "",
+                                name = userName.toString(),
+                                phone = userPhone.toString()
+                            )
+                        } else {
+                            // 프로필이 없는 경우
+                            Profile(
+                                id = 1,
+//                                image = userImage.toString(),
+                                image = (userImage.getTag(R.id.addUserImage) as? Uri)?.toString() ?: "", // 이미지 경로 가져오기
+                                name = userName.toString(),
+                                phone = userPhone.toString()
+                            )
+                        }
+                        Log.d("AddDialog: ", newProfile.toString())
+                        JsonUtility(requireContext()).appendProfileJson("data_user.json", newProfile)
+
+                        updateRecyclerView()  // 리사이클러뷰 업데이트
+                        dialog.dismiss()
+
+                    })
+                .setNegativeButton("취소",
+                    DialogInterface.OnClickListener { dialog, which ->
+                        val existingUserImage = dialogView.findViewById<ImageButton>(R.id.addUserImage)
+                        if (existingUserImage.parent != null) {
+
+                            (existingUserImage.parent as ViewGroup).removeView(existingUserImage)
+                        }
+                        Log.d("NegativeButton", "clicked")
+                        dialog.dismiss()
+                    })
+                .show()
+
+            userImage.setOnClickListener{
+                openGalleryForImage(userImage)
+            }
         }
 
         // SearchView에 포커스 설정
@@ -143,6 +253,12 @@ class Tab1 : Fragment(), ProfileAdapter.OnItemClickListener {
         profileAdapter.setOnItemClickListener(this)
     }
 
+    // 갤러리에서 이미지 선택
+    private fun openGalleryForImage(userImage: ImageButton) {
+        val intent = Intent(Intent.ACTION_GET_CONTENT, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+        intent.type = "image/*"
+        startActivityForResult(intent, 1)
+    }
     private fun updateRecyclerView() {
 
         profileAllData.clear()
@@ -235,6 +351,24 @@ class JsonUtility(private val context: Context) {
         }
     }
 
+    fun appendProfileJson(fileName: String, newData: Profile) {
+        try {
+            val file = File(context.filesDir, fileName)
+            val data: MutableList<Profile>
+            if (file.exists()) {
+                val jsonData = file.readText()
+                val profileType: Type = object :TypeToken<List<Profile>>() {}.type
+                data = Gson().fromJson(jsonData, profileType)
+            } else {
+                data = mutableListOf()
+            }
+            data.add(newData)
+            file.writeText(Gson().toJson(data))
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
     fun appendPhotoJson(fileName: String, newData: PhotoData){
         try {
             val file = File(context.filesDir, fileName)
@@ -283,18 +417,6 @@ class JsonUtility(private val context: Context) {
         }
     }
 
-//    fun readProfileData(fileName: String): List<Profile> {
-//        val file = File(context.filesDir, fileName)
-//        if (file.exists()) {
-//            val jsonData = file.readText()
-//            val profileType: Type = object : TypeToken<List<Profile>>() {}.type
-//            // Gson().fromJson의 결과가 null일 수 있으므로, null 확인 필요
-//            return Gson().fromJson(jsonData, profileType) ?: emptyList()
-//        } else {
-//            Log.d("readProfileData", "No such file")
-//            return emptyList()
-//        }
-//    }
 
 
     //    fun updateProfileDataJson(fileName: String, updateData: Profile) {
