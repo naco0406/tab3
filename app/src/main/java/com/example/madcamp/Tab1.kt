@@ -238,6 +238,7 @@ class Tab1 : Fragment(), ProfileAdapter.OnItemClickListener {
         searchView.clearFocus()
 
         this@Tab1.profileAdapter = ProfileAdapter(profileAllData)
+        rv_profile.adapter = profileAdapter
 
         // RecyclerView 아이템 클릭 리스너 설정
         profileAdapter.setOnItemClickListener(this)
@@ -262,18 +263,21 @@ class Tab1 : Fragment(), ProfileAdapter.OnItemClickListener {
         profiles.forEach{
             profileAllData.add(it)
         }
-        val profileAdapter = ProfileAdapter(profileAllData)
-        val rv_profile = view?.findViewById<RecyclerView>(R.id.rv_profile)
-        rv_profile?.adapter = profileAdapter
+//        val profileAdapter = ProfileAdapter(profileAllData)
+//        val rv_profile = view?.findViewById<RecyclerView>(R.id.rv_profile)
+//        rv_profile?.adapter = profileAdapter
+//        profileAdapter.sortByName()
+//        this@Tab1.profileAdapter = ProfileAdapter(profileAllData)
+//
+//        // RecyclerView 아이템 클릭 리스너 설정
+//        profileAdapter.setOnItemClickListener(this)
+//        Log.d("updateRecyclerView ", profileAllData.toString())
+//
+//        profileAdapter.notifyDataSetChanged()
+//        Log.d("notifyDataSetChanged", "")
+        profileAdapter.updateData(profileAllData)
         profileAdapter.sortByName()
-        this@Tab1.profileAdapter = ProfileAdapter(profileAllData)
-
-        // RecyclerView 아이템 클릭 리스너 설정
-        profileAdapter.setOnItemClickListener(this)
-        Log.d("updateRecyclerView ", profileAllData.toString())
-
         profileAdapter.notifyDataSetChanged()
-        Log.d("notifyDataSetChanged", "")
     }
 
     override fun onResume() {

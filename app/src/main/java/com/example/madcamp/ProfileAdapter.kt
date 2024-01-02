@@ -144,6 +144,7 @@ class ProfileAdapter(var profileList: MutableList<Profile>):
             profileList.clear()
             profileList.addAll(newProfileList)
             sortByName()
+            notifyDataSetChanged()
             diffResult.dispatchUpdatesTo(this@ProfileAdapter)
         }
     }
