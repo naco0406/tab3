@@ -27,7 +27,7 @@ class ProfileAdapter(var profileList: MutableList<Profile>):
         sortByName()
     }
 
-    private fun sortByName() {
+    public fun sortByName() {
         profileList = profileList.sortedBy { it.name }.toMutableList()
         notifyDataSetChanged()
     }
@@ -142,10 +142,8 @@ class ProfileAdapter(var profileList: MutableList<Profile>):
             val diffResult = DiffUtil.calculateDiff(diffCallBack)
 
             profileList.clear()
-//            profileList.addAll(results?.values as List<Profile>)
             profileList.addAll(newProfileList)
             sortByName()
-//            notifyDataSetChanged()
             diffResult.dispatchUpdatesTo(this@ProfileAdapter)
         }
     }

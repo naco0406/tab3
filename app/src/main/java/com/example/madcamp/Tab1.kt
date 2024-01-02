@@ -153,29 +153,26 @@ class Tab1 : Fragment(), ProfileAdapter.OnItemClickListener {
         val userName = dialogView.findViewById<EditText>(R.id.addUserName).text
         val userPhone = dialogView.findViewById<EditText>(R.id.addUserPhone).text
 
+        // Profile Add Button
         fabProfile.setOnClickListener {
-            // Profile Add Button
+            userName.clear()
+            userPhone.clear()
             Log.d("fabProfile", "clicked")
             Glide.with(this)
                 .load(R.drawable.image_cat1)  // 기본이미지
                 .placeholder(R.drawable.outline_image_24)
                 .error(R.drawable.outline_broken_image_24)
-//                .override(100, 100)
                 .into(userImage)
 
             val alertDialog = android.app.AlertDialog.Builder(context)
+            val parentView = dialogView.parent as? ViewGroup
+            parentView?.removeView(dialogView)
+
             alertDialog.setTitle("연락처 추가")
                 .setView(dialogView)
                 .setPositiveButton("저장",
                     DialogInterface.OnClickListener { dialog, which ->
                         Log.d("saveButton", "clicked")
-
-                        // dialog를 보여주기 전에 dialogView에 이미 존재하는 userImage를 찾아 제거.
-                        val existingUserImage = dialogView.findViewById<ImageButton>(R.id.addUserImage)
-                        if (existingUserImage.parent != null) {
-
-                            (existingUserImage.parent as ViewGroup).removeView(existingUserImage)
-                        }
 
                         val ProfileList = JsonUtility(requireContext()).readProfileData("data_user.json")
 
@@ -184,7 +181,6 @@ class Tab1 : Fragment(), ProfileAdapter.OnItemClickListener {
                             val lastProfileId = ProfileList.last().id
                             Profile(
                                 id = lastProfileId + 1,
-//                                image = userImage.toString(),
                                 // ImageButton에 연결된 추가정보를 불러와 문자열로 변환
                                 // 선택한 이미지의 uri를 Profile 객체에 설정
                                 image = (userImage.getTag(R.id.addUserImage) as? Uri)?.toString() ?: "",
@@ -195,7 +191,6 @@ class Tab1 : Fragment(), ProfileAdapter.OnItemClickListener {
                             // 프로필이 없는 경우
                             Profile(
                                 id = 1,
-//                                image = userImage.toString(),
                                 image = (userImage.getTag(R.id.addUserImage) as? Uri)?.toString() ?: "", // 이미지 경로 가져오기
                                 name = userName.toString(),
                                 phone = userPhone.toString()
@@ -210,11 +205,6 @@ class Tab1 : Fragment(), ProfileAdapter.OnItemClickListener {
                     })
                 .setNegativeButton("취소",
                     DialogInterface.OnClickListener { dialog, which ->
-                        val existingUserImage = dialogView.findViewById<ImageButton>(R.id.addUserImage)
-                        if (existingUserImage.parent != null) {
-
-                            (existingUserImage.parent as ViewGroup).removeView(existingUserImage)
-                        }
                         Log.d("NegativeButton", "clicked")
                         dialog.dismiss()
                     })
@@ -275,14 +265,13 @@ class Tab1 : Fragment(), ProfileAdapter.OnItemClickListener {
         val profileAdapter = ProfileAdapter(profileAllData)
         val rv_profile = view?.findViewById<RecyclerView>(R.id.rv_profile)
         rv_profile?.adapter = profileAdapter
-//        context?.let {
-//            rv_profile?.layoutManager = LinearLayoutManager(it)
-//            rv_profile?.addItemDecoration(VerticalItemDecorator(10))
-//        }
+        profileAdapter.sortByName()
         this@Tab1.profileAdapter = ProfileAdapter(profileAllData)
+
         // RecyclerView 아이템 클릭 리스너 설정
         profileAdapter.setOnItemClickListener(this)
         Log.d("updateRecyclerView ", profileAllData.toString())
+
         profileAdapter.notifyDataSetChanged()
         Log.d("notifyDataSetChanged", "")
     }
@@ -306,11 +295,6 @@ class Tab1 : Fragment(), ProfileAdapter.OnItemClickListener {
         }
         startActivity(tabIntent)
     }
-
-//    private fun updateRecyclerView() {
-//        val rv_profile = view?.findViewById<RecyclerView>(R.id.rv_profile)
-//        rv_profile?.adapter?.notifyDataSetChanged()
-//    }
 
     // 키보드 보여주기
     private fun showKeyboard(view: View) {
@@ -417,28 +401,6 @@ class JsonUtility(private val context: Context) {
         }
     }
 
-
-
-    //    fun updateProfileDataJson(fileName: String, updateData: Profile) {
-//        try {
-//            val file = File(context.filesDir, fileName)
-//            val data: MutableList<Profile>
-//
-//            if (file.exists()) {
-//                val jsonData = file.readText();
-//                // gson으로 json데이터를 List<Profile>로 파싱
-//                val profileType: Type = object : TypeToken<List<Profile>>() {}.type
-//                data = Gson().fromJson(jsonData, profileType)
-//            } else {
-//                data = mutableListOf()
-//            }
-//            // updateData 추가하고 파일에 쓰기
-//            data.add(updateData)
-//            file.writeText(Gson().toJson(data))
-//        } catch (e: Exception) {
-//            e.printStackTrace()
-//        }
-//    }
     fun updateProfileDataJson(fileName: String, updatedProfile: Profile) {
         try {
             val file = File(context.filesDir, fileName)
