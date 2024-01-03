@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
 import android.Manifest
 import android.content.Intent
@@ -14,12 +13,7 @@ import android.net.Uri
 import android.util.Log
 import android.view.View
 import android.widget.Button
-import android.widget.Toast
 import androidx.core.app.ActivityCompat
-import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.request.RequestOptions
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import org.w3c.dom.Text
 import kotlin.properties.Delegates
 
 class ProfileSubActivity : AppCompatActivity() {
@@ -66,7 +60,6 @@ class ProfileSubActivity : AppCompatActivity() {
         val imageUrl = intent.getStringExtra("image")
 
         // 받은 데이터로 View 업데이트
-//        textViewId.text = profileId
         textViewName.text = name
         textViewPhone.text = phone
 
@@ -121,7 +114,6 @@ class ProfileSubActivity : AppCompatActivity() {
             }
         }
 
-        //
         btnEdit.setOnClickListener {
 
             val editIntent = Intent(this, EditActivity::class.java)

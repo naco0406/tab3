@@ -19,15 +19,12 @@ import android.location.LocationListener
 import android.location.LocationManager
 import android.net.Uri
 import android.os.Environment
-import android.os.Handler
-import android.os.Looper
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.ImageButton
-import android.widget.RatingBar
 import android.widget.Spinner
 import android.widget.TextView
 import androidx.activity.result.ActivityResultLauncher
@@ -42,11 +39,9 @@ import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.gson.reflect.TypeToken
 import java.io.File
 import java.io.IOException
 import java.lang.Exception
-import java.lang.reflect.Type
 import java.sql.Timestamp
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -134,7 +129,6 @@ class Tab2 : Fragment() {
             val latitude = location.latitude
             val longitude = location.longitude
 //            Log.d("GPS Location2", "Latitude: $latitude, Longitude: $longitude")
-            // 여기에 위치 정보를 사용한 추가 작업을 수행합니다.
             val context = context ?: return@LocationListener
             val geocoder = Geocoder(context, Locale.KOREA) // 한국어로 설정
             try {
@@ -147,7 +141,6 @@ class Tab2 : Fragment() {
                     currentCity = city
                     currentCountry = country
 
-                    // 여기에 위치 정보를 사용한 추가 작업을 수행합니다.
                 }
             } catch (e: IOException) {
 //                e.printStackTrace()
@@ -183,26 +176,6 @@ class Tab2 : Fragment() {
         loadProfileData()
         setupSpinner()
 
-//        val gpsButton: Button = view.findViewById(R.id.gpsButton)
-//        gpsButton.setOnClickListener {
-//            //here
-//            requestLocationUpdates(locationListener)
-//            currentLocation?.let {
-//                if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-//                    locationManager.requestSingleUpdate(
-//                        LocationManager.GPS_PROVIDER,
-//                        LocationListener { location ->
-//                            // 현재 위치 정보 사용
-//                            val latitude = location.latitude
-//                            val longitude = location.longitude
-//                            Log.d("GPS Location", "Latitude: $latitude, Longitude: $longitude")
-//                        },
-//                        null
-//                    )
-//                }
-//            }
-//        }
-
         val fab: FloatingActionButton = view.findViewById(R.id.fab)
         fab.setOnClickListener {
             requestLocationUpdates(locationListener)
@@ -232,7 +205,6 @@ class Tab2 : Fragment() {
                 setOnClickListener {
                     showImageModal(uri, type, title, place, timestamp, star, people)
                 }
-//                background = ContextCompat.getDrawable(context, R.drawable.profile_image_rounded_corner)
 
                 layoutParams = GridLayout.LayoutParams().apply {
                     width = 0 // 초기 너비 0으로 설정
@@ -241,7 +213,6 @@ class Tab2 : Fragment() {
                     rowSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f)
                     columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f)
                     tag = index
-//                    scaleType = ImageView.ScaleType.CENTER_CROP
                 }
             }
             if (type == "internal"){
@@ -378,9 +349,6 @@ class Tab2 : Fragment() {
             refreshGridLayout()
         }
 
-//        val modalText = modalDataToText(place, timestamp, star, people)
-//        Log.d("Modal", "Modal Text: $modalText")
-//        modalTextView.setText(modalText)
         dialog.show()
     }
 
@@ -421,9 +389,7 @@ class Tab2 : Fragment() {
         val dialog = Dialog(requireContext())
         dialog.setContentView(R.layout.image_input) // 별도의 레이아웃 파일
         val modalImageView = dialog.findViewById<ImageView>(R.id.capturedImageView)
-//        val modalTextView = dialog.findViewById<TextView>(R.id.inputEditText)
         val inputEditText = dialog.findViewById<EditText>(R.id.inputEditText)
-//        val inputRatingBar = dialog.findViewById<RatingBar>(R.id.ratingBar)
         val saveButton = dialog.findViewById<Button>(R.id.saveButton)
         val file = File(currentPhotoPath)
         Log.d("addImageModal", "photoUri : $photoUri")
@@ -459,7 +425,6 @@ class Tab2 : Fragment() {
         }
         saveButton.setOnClickListener {
             val inputText = inputEditText.text.toString()
-//            val inputRating = inputRatingBar.rating.toInt()
             val peopleNames = selectedProfiles.map { it.name }
             Log.d("InputText", "Entered text: $inputText")
 
@@ -516,14 +481,12 @@ class Tab2 : Fragment() {
                 setOnClickListener {
                     showImageModal(photoData.uri, photoData.type, photoData.title, photoData.place, photoData.timestamp, photoData.star, photoData.people)
                 }
-//                background = ContextCompat.getDrawable(context, R.drawable.profile_image_rounded_corner)
                 layoutParams = GridLayout.LayoutParams().apply {
                     width = GridLayout.LayoutParams.WRAP_CONTENT
                     height = GridLayout.LayoutParams.WRAP_CONTENT
                     setMargins(8, 8, 8, 8)
                     rowSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f)
                     columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f)
-//                    scaleType = ImageView.ScaleType.CENTER_CROP
                 }
             }
 
@@ -551,14 +514,6 @@ class Tab2 : Fragment() {
         adjustSquareImage(gridLayout, newPhotoDataList.size)
     }
 
-//    fun modalDataToText(place: String, timestamp: Timestamp, star: Int, people: List<String>): String {
-//        val dateFormat = SimpleDateFormat("HH시 mm분, yyyy년 MM월 dd일")
-//        val formattedDate = dateFormat.format(timestamp)
-////        val stars = "⭐".repeat(star)
-//        val peopleText = people.joinToString(", ")
-//
-//        return "장소: $place\n\n시간: $formattedDate\n\n인물: $peopleText"
-//    }
 
     fun appendPlace(newPlace: String){
         if (placeList.isNullOrEmpty()) {
@@ -622,7 +577,6 @@ class itemProfileAdapter(
 
         checkBox.setOnCheckedChangeListener { _, isChecked ->
             checkedItems[position] = isChecked
-//            selectedProfile.add(profiles[position])
             selectedProfile[position] = if (isChecked) profiles[position] else null
         }
         return view

@@ -1,10 +1,8 @@
 package com.example.madcamp
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView.OnItemClickListener
 import android.widget.Filter
 import android.widget.Filterable
 import android.widget.ImageView
@@ -12,7 +10,6 @@ import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import org.w3c.dom.Text
 
 
 class ProfileAdapter(private var profileListAll: MutableList<Profile>):
@@ -20,8 +17,6 @@ class ProfileAdapter(private var profileListAll: MutableList<Profile>):
 
     var profileList: MutableList<Profile> = ArrayList(profileListAll)
     private var onItemClickListener: OnItemClickListener? = null
-
-//    private var selectedProfilePosition: Int = -1
 
     init {
         sortByName()

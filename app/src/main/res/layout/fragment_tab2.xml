@@ -36,17 +36,6 @@
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:layout_weight="1"/>
-<!--                <TextView-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:text="Hello!"-->
-<!--                    android:textColor="@color/highlight"-->
-<!--                    android:textSize="20dp"/>-->
-<!--                <Button-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:id="@+id/gpsButton"-->
-<!--                    android:text="GPS"/>-->
                 <Spinner
                     android:id="@+id/placeSpinner"
                     android:layout_width="80dp"

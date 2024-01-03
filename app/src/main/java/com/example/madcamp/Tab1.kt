@@ -6,23 +6,17 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
-import android.provider.ContactsContract.Contacts.Photo
 import android.provider.MediaStore
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.Window
 import android.view.inputmethod.InputMethodManager
-import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
-import android.widget.ImageView
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.SearchView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -31,7 +25,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.MultiTransformation
-import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.google.gson.Gson
@@ -116,9 +109,6 @@ class Tab1 : Fragment(), ProfileAdapter.OnItemClickListener {
         val context = context ?:return
         val jsonUtility = JsonUtility(context)
         try {
-//            val jsonData = jsonUtility.readJson("data_sample_user.json").toString()
-//            val profileType: Type = object: TypeToken<List<Profile>>() {}.type
-//            val profiles = jsonUtility.parseJson<List<Profile>>(jsonData, profileType)
             val profiles = jsonUtility.readProfileData("data_user.json")
 
             profiles.forEach{
@@ -264,17 +254,7 @@ class Tab1 : Fragment(), ProfileAdapter.OnItemClickListener {
         }
         Log.d("updateRecyclerView ", profileAllData.toString())
         profileAdapter.updateData(profileAllData)
-//        val profileAdapter = ProfileAdapter(profileAllData)
-//        val rv_profile = view?.findViewById<RecyclerView>(R.id.rv_profile)
-//        rv_profile?.adapter = profileAdapter
-//        profileAdapter.sortByName()
         this@Tab1.profileAdapter = ProfileAdapter(profileAllData)
-//
-//        // RecyclerView 아이템 클릭 리스너 설정
-//        profileAdapter.setOnItemClickListener(this)
-//
-//        profileAdapter.notifyDataSetChanged()
-//        Log.d("notifyDataSetChanged", "")
         profileAdapter.sortByName()
         profileAdapter.notifyDataSetChanged()
     }

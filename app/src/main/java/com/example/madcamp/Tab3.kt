@@ -2,38 +2,28 @@ package com.example.madcamp
 
 import CustomDatePickerDialog
 import android.Manifest
-import android.app.DatePickerDialog
 import android.content.pm.PackageManager
-import android.graphics.Color
-import android.graphics.drawable.Drawable
 import android.icu.util.Calendar
-import android.media.Image
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.Space
-import android.widget.Spinner
 import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
 import androidx.annotation.RequiresApi
 import androidx.cardview.widget.CardView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.view.marginLeft
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.MultiTransformation
-import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -102,7 +92,6 @@ class Tab3 : Fragment(), CustomDatePickerDialog.DatePickerDialogListener, OnDate
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_tab3, container, false)
     }
 
@@ -157,9 +146,6 @@ class Tab3 : Fragment(), CustomDatePickerDialog.DatePickerDialogListener, OnDate
             datePickerDialogFragment.setDatePickerDialogListener(this)
             datePickerDialogFragment.show(parentFragmentManager, "datePicker")
         }
-//
-//        val bottomSheet = view.findViewById<LinearLayout>(R.id.bottom_sheet)
-//        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet)
 
         val bottomSheetLayout: LinearLayout = view.findViewById(R.id.bottom_sheet)
         addCardsAndSpaceToLayout(cards, bottomSheetLayout)
@@ -206,7 +192,6 @@ class Tab3 : Fragment(), CustomDatePickerDialog.DatePickerDialogListener, OnDate
                     }
                     BottomSheetBehavior.STATE_EXPANDED -> {
                         Log.d("bottomSheet", "Expanded")
-//                        toolbar.visibility = View.GONE
                         bottomSheetBehavior.state = BottomSheetBehavior.STATE_HALF_EXPANDED
                     }
                     BottomSheetBehavior.STATE_COLLAPSED -> {
@@ -252,7 +237,7 @@ class Tab3 : Fragment(), CustomDatePickerDialog.DatePickerDialogListener, OnDate
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
             updateCardViewsForSelectedDate(date)
         } else {
-            // 선택이 해제되었을 때의 로직 (예: 모든 카드 표시)
+            // 선택이 해제되었을 때의 로직
             onceSelectedDate = CalendarDay.today()
             showAllCards()
         }
@@ -327,23 +312,6 @@ class Tab3 : Fragment(), CustomDatePickerDialog.DatePickerDialogListener, OnDate
             }
             background = ContextCompat.getDrawable(context, R.drawable.black_bar)
         }
-//        barButton.setOnClickListener(){
-//            bottomSheetBehavior.setDraggable(true)
-//        }
-//        barButton.setOnTouchListener { v, event ->
-//            when (event.action) {
-//                MotionEvent.ACTION_DOWN -> {
-//                    // 버튼이 눌렸을 때의 로직
-//                    bottomSheetBehavior.setDraggable(true)
-//                    true // 이벤트가 처리되었음을 나타냄
-//                }
-//                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
-//                    // 버튼에서 손가락이 떼어졌거나 취소되었을 때의 로직
-//                    true // 이벤트가 처리되었음을 나타냄
-//                }
-//                else -> false // 이벤트가 처리되지 않았음을 나타냄
-//            }
-//        }
 
         linearLayout.addView(barButton)
 

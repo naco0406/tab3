@@ -35,16 +35,7 @@
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:layout_weight="1"/>
-<!--            <ImageButton-->
-<!--                android:id="@+id/edit"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:background="@drawable/shape"-->
-<!--                android:src="@drawable/baseline_create_24"-->
-<!--                app:tint="@color/button_tint_selector"-->
-<!--                app:layout_constraintStart_toEndOf="@id/call_message"-->
-<!--                app:layout_constraintEnd_toEndOf="parent"-->
-<!--                app:layout_constraintBottom_toBottomOf="parent"/>-->
+
             <Button
                 android:id="@+id/saveButton"
                 android:layout_width="wrap_content"
@@ -111,28 +102,6 @@
             android:layout_gravity="center"
             android:orientation="horizontal"
             android:layout_marginTop="50dp">
-<!--            <TextView-->
-<!--                android:id="@+id/userId"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:textColor="@color/black"-->
-<!--                android:textSize="20dp"-->
-<!--                android:layout_gravity="center"/>-->
-<!--            <Button-->
-<!--                android:id="@+id/deleteButton"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_gravity="center"-->
-<!--                android:background="@drawable/circle_background"-->
-<!--                android:text="삭제"/>-->
-<!--            <ImageButton-->
-<!--                android:id="@+id/deleteButton"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_gravity="center"-->
-<!--                android:background="@drawable/circle_background"-->
-<!--                android:padding="8dp"-->
-<!--                android:src="@drawable/outline_delete_24"/>-->
         </LinearLayout>
 
     </LinearLayout>

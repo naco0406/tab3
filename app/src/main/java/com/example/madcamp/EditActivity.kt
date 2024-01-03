@@ -11,9 +11,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.ImageView
-import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
-import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import org.json.JSONArray
 import org.json.JSONException
@@ -61,7 +59,6 @@ class EditActivity : AppCompatActivity() {
         val phone = intent.getStringExtra("phone")
         val imageUrl = intent.getStringExtra("image")
 
-//        val textViewId = findViewById<TextView>(R.id.userId)
         val editTextViewName = findViewById<EditText>(R.id.editUserName)
         val editTextViewPhone = findViewById<EditText>(R.id.editPhone)
         val editImageView = findViewById<ImageView>(R.id.editUserImage)
@@ -69,7 +66,6 @@ class EditActivity : AppCompatActivity() {
         val saveButton = findViewById<Button>(R.id.saveButton)
         val deleteButton = findViewById<ImageButton>(R.id.deleteButton)
 
-//        textViewId.text = id.toString()
         // 이전 화면에서 선택된 프로필의 위치
         profilePosition = intent.getLongExtra("id", -1).toInt()
 
@@ -121,7 +117,6 @@ class EditActivity : AppCompatActivity() {
             putExtra("name", name)
             putExtra("phone", phone)
         }
-//            intent.putExtra("deletedPosition", profilePosition)
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
         startActivity(intent)
         overridePendingTransition(0, 0)
@@ -155,12 +150,9 @@ class EditActivity : AppCompatActivity() {
             val updatedProfiles = parseJson(updatedProfilesJson)
             Log.d("Delete Completed, ", updatedProfilesJson)
             // 어댑터 업데이트
-//            profileAdapter.updateData(updatedProfiles)
-//            Log.d("profileAdapter.updateData", updatedProfilesJson)
 
             // 삭제된 정보를 Tab1화면으로 전달하고, 액티비티 시작
             val intent = Intent(this, MainActivity::class.java)
-//            intent.putExtra("deletedPosition", profilePosition)
             startActivity(intent)
 
             finish()
@@ -234,27 +226,6 @@ class EditActivity : AppCompatActivity() {
         }
 
     }
-//    private fun showEditDialog(editTextViewName: EditText) {
-//        val editText = EditText(this)
-//        editText.setText(editTextViewName.text)
-//
-//        val dialog = AlertDialog.Builder(this)
-//            .setTitle("이름 수정")
-//            .setView(editText)
-//            .setPositiveButton("확인") { _, _ ->
-//                // 수정된 텍스트를 저장하거나 처리하는 로직 추가
-//                editTextViewName.text = editText.text
-//            }
-//            .setNegativeButton("취소", null)
-//            .create()
-//
-//        // 키보드 표시
-//        editText.requestFocus()
-//        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-//        imm.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT)
-//
-//        dialog.show()
-//    }
 
 
 }
