@@ -1,10 +1,10 @@
 # NAGA, 나가
 
-<img src="https://github.com/naco0406/tab3/assets/71596178/a353ec70-a146-41ba-abd9-039cab8b3857.png" width="60%" height="60%"/>
-<img src="https://github.com/naco0406/tab3/assets/71596178/f0c822c5-5d48-492a-8697-06fec4bc968a.png" width="60%" height="60%"/>
-<img src="https://github.com/naco0406/tab3/assets/71596178/49c9a740-0b36-4817-9496-301b73a7e851.png" width="60%" height="60%"/>
-<img src="https://github.com/naco0406/tab3/assets/71596178/56ee867a-6a38-4131-aa10-7f726cf2261a.png" width="60%" height="60%"/>
-<img src="https://github.com/naco0406/tab3/assets/71596178/a19b120e-5a51-430e-8c0f-4b7be233e061" width="60%" height="60%"/>
+<img src="https://github.com/naco0406/tab3/assets/71596178/a353ec70-a146-41ba-abd9-039cab8b3857.png" width="100%" height="100%"/>
+<img src="https://github.com/naco0406/tab3/assets/71596178/a19b120e-5a51-430e-8c0f-4b7be233e061" width="100%" height="100%"/>
+<img src="https://github.com/naco0406/tab3/assets/71596178/f0c822c5-5d48-492a-8697-06fec4bc968a.png" width="100%" height="100%"/>
+<img src="https://github.com/naco0406/tab3/assets/71596178/49c9a740-0b36-4817-9496-301b73a7e851.png" width="100%" height="100%"/>
+<img src="https://github.com/naco0406/tab3/assets/71596178/56ee867a-6a38-4131-aa10-7f726cf2261a.png" width="100%" height="100%"/>
 
 
 ## 💻 프로젝트 소개
