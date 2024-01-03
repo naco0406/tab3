@@ -1,10 +1,10 @@
 # NAGA, 나가
 
-<img src="https://github.com/naco0406/tab3/assets/71596178/a353ec70-a146-41ba-abd9-039cab8b3857.png" width="640" height="360"/>
-<img src="https://github.com/naco0406/tab3/assets/71596178/f0c822c5-5d48-492a-8697-06fec4bc968a.png" width="640" height="360"/>
-<img src="https://github.com/naco0406/tab3/assets/71596178/49c9a740-0b36-4817-9496-301b73a7e851.png" width="640" height="360"/>
-<img src="https://github.com/naco0406/tab3/assets/71596178/56ee867a-6a38-4131-aa10-7f726cf2261a.png" width="640" height="360"/>
-<img src="https://github.com/naco0406/tab3/assets/71596178/a19b120e-5a51-430e-8c0f-4b7be233e061" width="640" height="313"/>
+<img src="https://github.com/naco0406/tab3/assets/71596178/a353ec70-a146-41ba-abd9-039cab8b3857.png" width="60%" height="60%"/>
+<img src="https://github.com/naco0406/tab3/assets/71596178/f0c822c5-5d48-492a-8697-06fec4bc968a.png" width="60%" height="60%"/>
+<img src="https://github.com/naco0406/tab3/assets/71596178/49c9a740-0b36-4817-9496-301b73a7e851.png" width="60%" height="60%"/>
+<img src="https://github.com/naco0406/tab3/assets/71596178/56ee867a-6a38-4131-aa10-7f726cf2261a.png" width="60%" height="60%"/>
+<img src="https://github.com/naco0406/tab3/assets/71596178/a19b120e-5a51-430e-8c0f-4b7be233e061" width="60%" height="60%"/>
 
 
 ## 💻 프로젝트 소개
@@ -37,8 +37,8 @@ Android Studio(Kotlin)를 사용하여 개발한 여행에서 만난 사람들�
 > 연락처 검색, 추가/수정/삭제 가능
 > 
 
-<img src="https://github.com/naco0406/tab3/assets/71596178/56add349-6c37-46ed-b312-6c5c20964017.png" width="360" height="683"/>
-<img src="https://github.com/naco0406/tab3/assets/71596178/1568cf4e-935d-4c1d-90ae-b155f649eb4f.png" width="360" height="683"/>
+<img src="https://github.com/naco0406/tab3/assets/71596178/56add349-6c37-46ed-b312-6c5c20964017.png" width="30%" height="30%"/>
+<img src="https://github.com/naco0406/tab3/assets/71596178/1568cf4e-935d-4c1d-90ae-b155f649eb4f.png" width="30%" height="30%"/>
 
 
 - 연락처 정보 보여주기
@@ -64,11 +64,11 @@ Android Studio(Kotlin)를 사용하여 개발한 여행에서 만난 사람들�
 > 캘린더에서 선택한 날짜에 맞는 데이터와 이미지 보여주기
 
 <p align="center">
-<img src="https://github.com/naco0406/tab3/assets/71596178/e6984da7-64e2-4d84-a3e5-cd92d1ff6207" width="360" height="683">
+<img src="https://github.com/naco0406/tab3/assets/71596178/e6984da7-64e2-4d84-a3e5-cd92d1ff6207" width="30%" height="30%">
 </p>
 
-<img src="https://github.com/naco0406/tab3/assets/71596178/55a52592-16db-4949-aad3-a65ad7dc982c.png" width="360" height="683"/>
-<img src="https://github.com/naco0406/tab3/assets/71596178/07e03fa9-bd36-47af-b510-85f5ab92c70b.png" width="360" height="683"/>
+<img src="https://github.com/naco0406/tab3/assets/71596178/55a52592-16db-4949-aad3-a65ad7dc982c.png" width="30%" height="30%"/>
+<img src="https://github.com/naco0406/tab3/assets/71596178/07e03fa9-bd36-47af-b510-85f5ab92c70b.png" width="30%" height="30%"/>
 
 
 
@@ -89,8 +89,8 @@ Android Studio(Kotlin)를 사용하여 개발한 여행에서 만난 사람들�
 > 사진을 모아 보고, 추가할 수 있는 갤러리
 
 
-<img src="https://github.com/naco0406/tab3/assets/71596178/5f5f337a-bc6a-47be-b93b-dd6e5896c7cb.png" width="360" height="683"/>
-<img src="https://github.com/naco0406/tab3/assets/71596178/1df8ffb3-2feb-43c1-a554-792089640d4c.png" width="360" height="683"/>
+<img src="https://github.com/naco0406/tab3/assets/71596178/5f5f337a-bc6a-47be-b93b-dd6e5896c7cb.png" width="30%" height="30%"/>
+<img src="https://github.com/naco0406/tab3/assets/71596178/1df8ffb3-2feb-43c1-a554-792089640d4c.png" width="30%" height="30%"/>
 
 
 - 사진 추가 클릭시 카메라 앱으로 이동하고, 사진 찍기
