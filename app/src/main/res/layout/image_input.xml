@@ -8,26 +8,40 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical">
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
         <ImageView
             android:id="@+id/capturedImageView"
             android:layout_width="300dp"
             android:layout_height="300dp"
             android:scaleType="centerCrop"/>
+        <ImageButton
+            android:id="@+id/likeButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/baseline_favorite_border_24"
+            android:background="@android:color/transparent"
+            android:layout_marginRight="16dp"
+            android:layout_marginBottom="16dp"
+            android:layout_gravity="bottom|end"/>
+        </FrameLayout>
 
         <EditText
             android:id="@+id/inputEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:hint="제목"
+            android:hint="제목을 입력해주세요"
+            android:textSize="16dp"
             android:layout_marginTop="16dp"/>
-        <RatingBar
-            android:id="@+id/ratingBar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:numStars="5"
-            android:stepSize="1.0"
-            android:layout_marginTop="16dp"/>
+<!--        <RatingBar-->
+<!--            android:id="@+id/ratingBar"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:numStars="5"-->
+<!--            android:stepSize="1.0"-->
+<!--            android:layout_marginTop="16dp"/>-->
 
 <!--        <Spinner-->
 <!--            android:id="@+id/optionsSpinner"-->
@@ -40,17 +54,21 @@
             android:id="@+id/peopleButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Select People"
+            android:text="함께한 사람을 골라주세요"
+            android:textSize="12dp"
+            android:background="@drawable/profile_rounded_corner"
+            android:backgroundTint="@color/key"
             android:layout_marginTop="16dp" />
 
         <Button
             android:id="@+id/saveButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Save"
+            android:background="@android:color/transparent"
+            android:textColor="@color/black"
+            android:text="저장"
             android:layout_gravity="bottom|end"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="16dp"/>
+            android:layout_marginTop="12dp"/>
     </LinearLayout>
 
 </FrameLayout>
