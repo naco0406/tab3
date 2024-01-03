@@ -81,6 +81,7 @@
             app:mcv_leftArrowMask="@null"
             app:mcv_rightArrowMask="@null"
             app:mcv_headerTextAppearance="@null"
+            app:mcv_selectionColor="@color/key"
             app:mcv_dateTextAppearance="@style/CalenderViewDateCustomText"
             app:mcv_weekDayTextAppearance="@style/CalenderViewWeekCustomText"/>
         <com.example.madcamp.CustomScrollView

@@ -92,8 +92,8 @@ class Tab2 : Fragment() {
     private lateinit var locationManager: LocationManager
     private lateinit var locationListener: LocationListener
     private var currentLocation: Location? = null
-    private var currentCity: String? = null
-    private var currentCountry: String? = null
+    private var currentCity: String = "대전광역시"
+    private var currentCountry: String = "대한민국"
     private var locationLoaded: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
