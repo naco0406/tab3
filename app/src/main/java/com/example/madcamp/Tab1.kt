@@ -6,6 +6,8 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -14,6 +16,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.Window
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
@@ -27,6 +30,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.MultiTransformation
+import com.bumptech.glide.load.resource.bitmap.CenterCrop
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.bumptech.glide.request.RequestOptions
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.io.File
@@ -45,16 +52,6 @@ class Tab1 : Fragment(), ProfileAdapter.OnItemClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         JsonUtility(requireContext()).copyFileToInternalStorage("data_sample_user.json", "data_user.json")
-//        val users = JsonUtility(requireContext()).readPhotoData("data_user.json")
-//        users.forEach {
-//
-//        }
-//        if (context?.let { ContextCompat.checkSelfPermission(it, Manifest.permission.READ_EXTERNAL_STORAGE) } != PackageManager.PERMISSION_GRANTED) {
-//            ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 100)
-//        }
-//        if (context?.let { ContextCompat.checkSelfPermission(it, Manifest.permission.WRITE_EXTERNAL_STORAGE) } != PackageManager.PERMISSION_GRANTED) {
-//            ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), 100)
-//        }
 
         val permissions = arrayOf(
             Manifest.permission.READ_EXTERNAL_STORAGE,
@@ -151,6 +148,8 @@ class Tab1 : Fragment(), ProfileAdapter.OnItemClickListener {
         val userName = dialogView.findViewById<EditText>(R.id.addUserName).text
         val userPhone = dialogView.findViewById<EditText>(R.id.addUserPhone).text
 
+        val transformation = MultiTransformation(CenterCrop(), RoundedCorners(16))
+
         // Profile Add Button
         fabProfile.setOnClickListener {
             userName.clear()
@@ -159,6 +158,7 @@ class Tab1 : Fragment(), ProfileAdapter.OnItemClickListener {
             Glide.with(this)
                 .load(R.drawable.image_cat1)  // 기본이미지
                 .placeholder(R.drawable.outline_image_24)
+                .apply((RequestOptions.bitmapTransform(transformation)))
                 .error(R.drawable.outline_broken_image_24)
                 .into(userImage)
 
@@ -207,7 +207,6 @@ class Tab1 : Fragment(), ProfileAdapter.OnItemClickListener {
                         dialog.dismiss()
                     })
                 .show()
-
             userImage.setOnClickListener{
                 openGalleryForImage(userImage)
             }
