@@ -387,6 +387,7 @@ class Tab3 : Fragment(), CustomDatePickerDialog.DatePickerDialogListener, OnDate
             val imageViewD = cardViewD.findViewById<ImageView>(R.id.cardImage)
             cardViewPairs.add(Pair(cardViewD, imageViewD))
         }
+        bottomSheetBehavior.setDraggable(true)
         val bottomSheetLayout: LinearLayout = view?.findViewById(R.id.bottom_sheet) ?: return
         addCardsAndSpaceToLayout(cards, bottomSheetLayout)
         updateCardViewsForSelectedDate(onceSelectedDate)
