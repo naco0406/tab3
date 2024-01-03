@@ -148,8 +148,6 @@ class Tab1 : Fragment(), ProfileAdapter.OnItemClickListener {
         val userName = dialogView.findViewById<EditText>(R.id.addUserName).text
         val userPhone = dialogView.findViewById<EditText>(R.id.addUserPhone).text
 
-        val transformation = MultiTransformation(CenterCrop(), RoundedCorners(16))
-
         // Profile Add Button
         val transformation = MultiTransformation(RoundedCorners(16))
         fabProfile.setOnClickListener {
@@ -198,6 +196,8 @@ class Tab1 : Fragment(), ProfileAdapter.OnItemClickListener {
                         }
                         Log.d("AddDialog: ", newProfile.toString())
                         JsonUtility(requireContext()).appendProfileJson("data_user.json", newProfile)
+                        val appendedProfiles = JsonUtility(requireContext()).readProfileData("data_user.json")
+                        profileAdapter.updateData(appendedProfiles)
 
                         updateRecyclerView()  // 리사이클러뷰 업데이트
                         dialog.dismiss()
@@ -206,6 +206,7 @@ class Tab1 : Fragment(), ProfileAdapter.OnItemClickListener {
                 .setNegativeButton("취소",
                     DialogInterface.OnClickListener { dialog, which ->
                         Log.d("NegativeButton", "clicked")
+                        updateRecyclerView()
                         dialog.dismiss()
                     })
                 .show()

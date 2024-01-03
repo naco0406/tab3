@@ -1,7 +1,9 @@
 package com.example.madcamp
 
 import CustomDatePickerDialog
+import android.Manifest
 import android.app.DatePickerDialog
+import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.icu.util.Calendar
@@ -26,6 +28,7 @@ import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
 import androidx.annotation.RequiresApi
 import androidx.cardview.widget.CardView
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.marginLeft
 import com.bumptech.glide.Glide
@@ -53,13 +56,13 @@ class CustomWeekDayFormatter : WeekDayFormatter {
     }
 }
 
-class EventDecorator(private val dates: HashSet<CalendarDay>) : DayViewDecorator {
+class EventDecorator(private val dates: HashSet<CalendarDay>, private val color: Int) : DayViewDecorator {
     override fun shouldDecorate(day: CalendarDay): Boolean {
         return dates.contains(day)
     }
 
     override fun decorate(view: DayViewFacade) {
-        view.addSpan(DotSpan(7f, Color.RED)) // 데코레이션 스타일 적용
+        view.addSpan(DotSpan(7f, color)) // 데코레이션 스타일 적용
     }
 }
 class Tab3 : Fragment(), CustomDatePickerDialog.DatePickerDialogListener, OnDateSelectedListener {
@@ -71,6 +74,28 @@ class Tab3 : Fragment(), CustomDatePickerDialog.DatePickerDialogListener, OnDate
     private val cardViewPairs = mutableListOf<Pair<CardView, ImageView>>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val permissions = arrayOf(
+            Manifest.permission.CAMERA,
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.SEND_SMS,
+            Manifest.permission.CALL_PHONE
+        )
+
+        // 권한 요청
+        if (!hasPermissions(permissions)) {
+            ActivityCompat.requestPermissions(requireActivity(), permissions, 100)
+        }
+    }
+    private fun hasPermissions(permissions: Array<String>): Boolean {
+        permissions.forEach { permission ->
+            if (ContextCompat.checkSelfPermission(requireContext(), permission) != PackageManager.PERMISSION_GRANTED) {
+                return false
+            }
+        }
+        return true
     }
 
     override fun onCreateView(
@@ -92,15 +117,18 @@ class Tab3 : Fragment(), CustomDatePickerDialog.DatePickerDialogListener, OnDate
         cards = JsonUtility(requireContext()).readPhotoData("data_image.json")
         val dateSet = HashSet<CalendarDay>()
         cards.forEach { card ->
+            val cardViewD = createCardView(card) // createCardView 함수는 이전 답변에서 정의
+            val imageViewD = cardViewD.findViewById<ImageView>(R.id.cardImage)
             val time = card.timestamp
             val date = Date(time.time)
             dateSet.add(CalendarDay.from(date))
+            cardViewPairs.add(Pair(cardViewD, imageViewD))
         }
 
         val todayButton: Button = view.findViewById(R.id.buttonDateToday)
         val calendarView = view.findViewById<MaterialCalendarView>(R.id.calendarView)
         calendarView.setWeekDayFormatter(CustomWeekDayFormatter())
-        calendarView.addDecorator(EventDecorator(dateSet))
+        calendarView.addDecorator(EventDecorator(dateSet, ContextCompat.getColor(requireContext(), R.color.key)))
         calendarView.setOnDateChangedListener(this)
 
         onceSelectedDate = CalendarDay.today()
@@ -109,8 +137,10 @@ class Tab3 : Fragment(), CustomDatePickerDialog.DatePickerDialogListener, OnDate
 
 
         todayButton.setOnClickListener {
-            calendarView.setSelectedDate(CalendarDay.today())
-            updateCardViewsForSelectedDate(CalendarDay.today())
+            val today = CalendarDay.today()
+            calendarView.setCurrentDate(today)
+            calendarView.setSelectedDate(today)
+            updateCardViewsForSelectedDate(today)
         }
 
         val currentDate = Calendar.getInstance()
@@ -193,21 +223,15 @@ class Tab3 : Fragment(), CustomDatePickerDialog.DatePickerDialogListener, OnDate
             }
 
             override fun onSlide(bottomSheet: View, slideOffset: Float) {
-                // 슬라이드 상태 변경시 처리
-//                calendarView.state().edit()
-//                    .setCalendarDisplayMode(CalendarMode.MONTHS)
-//                    .commit()
-//                customScrollView.setScrollingEnabled(false)
                 Log.d("onSlide", "slideOffset: $slideOffset")
-                if (slideOffset > 0.75f){
+                if (slideOffset > 0.75f) {
                     bottomSheetBehavior.state = BottomSheetBehavior.STATE_HALF_EXPANDED
                 }
-//                val newHeight = 100.dp * (1 + slideOffset * 2)
+
                 cardViewPairs.forEach { (cardView, imageView) ->
                     val originalHeight = 0
                     val width = imageView.width
 
-                    // slideOffset이 0에서 0.6 사이일 때 높이를 조정
                     if (slideOffset in 0.0..0.6) {
                         val newHeight = (originalHeight + width * slideOffset / 0.6).toInt()
                         val layoutParams = imageView.layoutParams
@@ -216,6 +240,7 @@ class Tab3 : Fragment(), CustomDatePickerDialog.DatePickerDialogListener, OnDate
                     }
                 }
             }
+
         })
 
     }
@@ -224,6 +249,7 @@ class Tab3 : Fragment(), CustomDatePickerDialog.DatePickerDialogListener, OnDate
         // 날짜가 선택되었을 때의 로직
         onceSelectedDate = date
         if (selected) {
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
             updateCardViewsForSelectedDate(date)
         } else {
             // 선택이 해제되었을 때의 로직 (예: 모든 카드 표시)
@@ -324,20 +350,18 @@ class Tab3 : Fragment(), CustomDatePickerDialog.DatePickerDialogListener, OnDate
         val transformation = MultiTransformation(RoundedCorners(16))
         // 모든 카드 데이터에 대해 반복하여 카드 뷰를 생성하고 LinearLayout에 추가
         cardDataList.forEach { cardData ->
-            val cardViewD = createCardView(cardData) // createCardView 함수는 이전 답변에서 정의
-            val imageViewD = cardViewD.findViewById<ImageView>(R.id.cardImage)
-            val layoutParams = imageViewD.layoutParams
-            if (bottomSheetBehavior.state == BottomSheetBehavior.STATE_COLLAPSED){
-                layoutParams.height = 0
-                imageViewD.layoutParams = layoutParams
-            } else if (bottomSheetBehavior.state == BottomSheetBehavior.STATE_HALF_EXPANDED) {
-                val originalHeight = 0
-                val width = imageViewD.width
-                val newHeight = originalHeight + width
-                val layoutParams = imageViewD.layoutParams
-                layoutParams.height = newHeight
-                imageViewD.layoutParams = layoutParams
+            val cardView = createCardView(cardData)
+            val imageView = cardView.findViewById<ImageView>(R.id.cardImage)
+            val layoutParams = imageView.layoutParams
+
+            if (bottomSheetBehavior.state == BottomSheetBehavior.STATE_HALF_EXPANDED) {
+                // 이미지 뷰의 높이를 가로 길이와 동일하게 설정
+                val width = imageView.width
+                layoutParams.height = width
+            } else {
+                layoutParams.height = 0 // 또는 다른 높이 설정
             }
+            imageView.layoutParams = layoutParams
 
             when (cardData.type) {
                 "internal" -> {
@@ -345,18 +369,18 @@ class Tab3 : Fragment(), CustomDatePickerDialog.DatePickerDialogListener, OnDate
                     Glide.with(this)
                         .load(imageId)
                         .apply(RequestOptions.bitmapTransform(transformation))
-                        .into(imageViewD)
+                        .into(imageView)
                 }
                 "external" -> {
                     val file = File(cardData.uri)
                     Glide.with(this)
                         .load(file)
                         .apply(RequestOptions.bitmapTransform(transformation))
-                        .into(imageViewD)
+                        .into(imageView)
                 }
             }
-            cardViewPairs.add(Pair(cardViewD, imageViewD))
-            linearLayout.addView(cardViewD)
+            cardViewPairs.add(Pair(cardView, imageView))
+            linearLayout.addView(cardView)
         }
 
         val heightPerCard = 140
@@ -390,7 +414,11 @@ class Tab3 : Fragment(), CustomDatePickerDialog.DatePickerDialogListener, OnDate
     override fun onResume() {
         super.onResume()
         cards = JsonUtility(requireContext()).readPhotoData("data_image.json")
-
+        cards.forEach {
+            val cardViewD = createCardView(it) // createCardView 함수는 이전 답변에서 정의
+            val imageViewD = cardViewD.findViewById<ImageView>(R.id.cardImage)
+            cardViewPairs.add(Pair(cardViewD, imageViewD))
+        }
         val bottomSheetLayout: LinearLayout = view?.findViewById(R.id.bottom_sheet) ?: return
         addCardsAndSpaceToLayout(cards, bottomSheetLayout)
         updateCardViewsForSelectedDate(onceSelectedDate)
