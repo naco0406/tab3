@@ -272,7 +272,8 @@ class Tab3 : Fragment(), CustomDatePickerDialog.DatePickerDialogListener, OnDate
         Log.d("Card Data Loaded", "title: $title, place: $place, timestamp: $timestamp")
         textViewTitle.text = title
         textViewPlace.text = place
-        textViewTimestamp.text = timestamp.toString()
+        val timestampString = timestamp.toString().split(" ", ".")[1]
+        textViewTimestamp.text = timestampString
 
         // 완성된 컨텐츠 뷰를 CardView에 추가
         cardView.addView(cardContent)
@@ -300,6 +301,23 @@ class Tab3 : Fragment(), CustomDatePickerDialog.DatePickerDialogListener, OnDate
             }
             background = ContextCompat.getDrawable(context, R.drawable.black_bar)
         }
+//        barButton.setOnClickListener(){
+//            bottomSheetBehavior.setDraggable(true)
+//        }
+//        barButton.setOnTouchListener { v, event ->
+//            when (event.action) {
+//                MotionEvent.ACTION_DOWN -> {
+//                    // 버튼이 눌렸을 때의 로직
+//                    bottomSheetBehavior.setDraggable(true)
+//                    true // 이벤트가 처리되었음을 나타냄
+//                }
+//                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+//                    // 버튼에서 손가락이 떼어졌거나 취소되었을 때의 로직
+//                    true // 이벤트가 처리되었음을 나타냄
+//                }
+//                else -> false // 이벤트가 처리되지 않았음을 나타냄
+//            }
+//        }
 
         linearLayout.addView(barButton)
 

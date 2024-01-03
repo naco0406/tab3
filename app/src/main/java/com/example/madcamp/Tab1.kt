@@ -7,9 +7,9 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
+import android.provider.ContactsContract.Contacts.Photo
 import android.provider.MediaStore
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -151,12 +151,14 @@ class Tab1 : Fragment(), ProfileAdapter.OnItemClickListener {
         val transformation = MultiTransformation(CenterCrop(), RoundedCorners(16))
 
         // Profile Add Button
+        val transformation = MultiTransformation(RoundedCorners(16))
         fabProfile.setOnClickListener {
             userName.clear()
             userPhone.clear()
             Log.d("fabProfile", "clicked")
             Glide.with(this)
                 .load(R.drawable.image_cat1)  // 기본이미지
+                .apply(RequestOptions.bitmapTransform(transformation))
                 .placeholder(R.drawable.outline_image_24)
                 .apply((RequestOptions.bitmapTransform(transformation)))
                 .error(R.drawable.outline_broken_image_24)
@@ -398,6 +400,40 @@ class JsonUtility(private val context: Context) {
         } else {
             Log.d("readPhotoData", "No such file")
             emptyList()
+        }
+    }
+
+    fun updatePhotoDataJson(fileName: String, updatedPhoto: PhotoData) {
+        try {
+            val file = File(context.filesDir, fileName)
+            val photos: MutableList<PhotoData>
+            Log.d("updateProfile","$file")
+
+            if (file.exists()) {
+                val jsonData = file.readText()
+                val photoType = object : TypeToken<List<PhotoData>>() {}.type
+                photos = Gson().fromJson(jsonData, photoType)
+                Log.d("updateProfile","$photos")
+            } else {
+                photos = mutableListOf()
+            }
+
+            // 특정 id를 가진 프로필 찾아서 업데이트
+            val index = photos.indexOfFirst { it.uri == updatedPhoto.uri }
+            if (index != -1) {
+                photos[index] = updatedPhoto
+                Log.d("updatePhoto","$updatedPhoto")
+            } else {
+                // 프로필이 존재하지 않는 경우 새로 추가
+                photos.add(updatedPhoto)
+            }
+
+            // 수정된 프로필 리스트를 JSON으로 변환하여 파일에 저장
+            Log.d("updatePhoto","$photos")
+            file.writeText(Gson().toJson(photos))
+            Log.d("updatePhoto","Gson")
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 

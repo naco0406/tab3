@@ -12,6 +12,7 @@ import android.widget.ImageView
 import android.app.Dialog
 import android.content.Context
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.location.Geocoder
 import android.location.Location
 import android.location.LocationListener
@@ -25,6 +26,7 @@ import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.EditText
+import android.widget.ImageButton
 import android.widget.RatingBar
 import android.widget.Spinner
 import android.widget.TextView
@@ -313,8 +315,11 @@ class Tab2 : Fragment() {
         val dialog = Dialog(requireContext())
         dialog.setContentView(R.layout.dialog_image) // 별도의 레이아웃 파일
         val modalImageView = dialog.findViewById<ImageView>(R.id.dialogImageView)
-        val modalTextView = dialog.findViewById<TextView>(R.id.dialogTextView)
+        val modalTextPlace = dialog.findViewById<TextView>(R.id.dialogPlace)
+        val modalTextTime = dialog.findViewById<TextView>(R.id.dialogTime)
+        val modalTextPeople = dialog.findViewById<TextView>(R.id.dialogPeople)
         val modalTitleTextView = dialog.findViewById<TextView>(R.id.dialogTitleTextView)
+        val peopleImage = dialog.findViewById<ImageView>(R.id.peopleImage)
         if (type == "internal"){
             val imageId = context?.resources?.getIdentifier(uri, "drawable", requireContext().packageName)
             Log.d("Image Loader", "Image Uri from JSON: $imageId")
@@ -332,9 +337,60 @@ class Tab2 : Fragment() {
         }
 
         modalTitleTextView.setText(title)
-        val modalText = modalDataToText(place, timestamp, star, people)
+        val dateFormat = SimpleDateFormat("HH시 mm분, yyyy년 MM월 dd일")
+        val formattedDate = dateFormat.format(timestamp)
+
+        modalTextPlace.setText(place)
+        modalTextTime.setText(formattedDate)
+        if (people != null && people.isEmpty()){
+            peopleImage.visibility = View.GONE
+            modalTextPeople.visibility = View.GONE
+        } else {
+            modalTextPeople.setText(people.joinToString(separator = ", "))
+        }
+
+        val heartButton = dialog.findViewById<ImageButton>(R.id.likeButton)
+        val unliked = R.drawable.baseline_favorite_border_24
+        val liked = R.drawable.baseline_favorite_24
+        var newStar = 0
+        if (star == 0){
+            heartButton.setImageResource(unliked)
+            heartButton.setTag(unliked)
+            heartButton.setColorFilter(Color.BLACK)
+        } else {
+            heartButton.setImageResource(liked)
+            heartButton.setTag(liked)
+            heartButton.setColorFilter(Color.RED)
+        }
+        heartButton.setOnClickListener {
+            if (heartButton.getTag() == liked){
+                heartButton.setImageResource(unliked)
+                heartButton.setTag(unliked)
+                heartButton.setColorFilter(Color.BLACK)
+                newStar = 0
+            } else {
+                heartButton.setImageResource(liked)
+                heartButton.setTag(liked)
+                heartButton.setColorFilter(Color.RED)
+                newStar = 5
+            }
+
+            val newPhotoData = PhotoData(
+                title = title,
+                place = place,
+                timestamp = timestamp,
+                star = newStar,
+                people = people,
+                type = type,
+                uri = uri
+            )
+            JsonUtility(requireContext()).updatePhotoDataJson("data_image.json", newPhotoData)
+            refreshGridLayout()
+        }
+
+//        val modalText = modalDataToText(place, timestamp, star, people)
 //        Log.d("Modal", "Modal Text: $modalText")
-        modalTextView.setText(modalText)
+//        modalTextView.setText(modalText)
         dialog.show()
     }
 
@@ -377,7 +433,7 @@ class Tab2 : Fragment() {
         val modalImageView = dialog.findViewById<ImageView>(R.id.capturedImageView)
 //        val modalTextView = dialog.findViewById<TextView>(R.id.inputEditText)
         val inputEditText = dialog.findViewById<EditText>(R.id.inputEditText)
-        val inputRatingBar = dialog.findViewById<RatingBar>(R.id.ratingBar)
+//        val inputRatingBar = dialog.findViewById<RatingBar>(R.id.ratingBar)
         val saveButton = dialog.findViewById<Button>(R.id.saveButton)
         val file = File(currentPhotoPath)
         Log.d("addImageModal", "photoUri : $photoUri")
@@ -386,12 +442,34 @@ class Tab2 : Fragment() {
             .into(modalImageView)
 
         val peopleButton: Button = dialog.findViewById(R.id.peopleButton)
+        peopleButton.backgroundTintList = ContextCompat.getColorStateList(requireContext(), R.color.key)
         peopleButton.setOnClickListener {
             showProfileDialog()
         }
+        val heartButton = dialog.findViewById<ImageButton>(R.id.likeButton)
+        val unliked = R.drawable.baseline_favorite_border_24
+        val liked = R.drawable.baseline_favorite_24
+        var newStar = 0
+        heartButton.setImageResource(unliked)
+        heartButton.setTag(unliked)
+        heartButton.setColorFilter(Color.BLACK)
+
+        heartButton.setOnClickListener {
+            if (heartButton.getTag() == liked) {
+                heartButton.setImageResource(unliked)
+                heartButton.setTag(unliked)
+                heartButton.setColorFilter(Color.BLACK)
+                newStar = 0
+            } else {
+                heartButton.setImageResource(liked)
+                heartButton.setTag(liked)
+                heartButton.setColorFilter(Color.RED)
+                newStar = 5
+            }
+        }
         saveButton.setOnClickListener {
             val inputText = inputEditText.text.toString()
-            val inputRating = inputRatingBar.rating.toInt()
+//            val inputRating = inputRatingBar.rating.toInt()
             val peopleNames = selectedProfiles.map { it.name }
             Log.d("InputText", "Entered text: $inputText")
 
@@ -399,7 +477,7 @@ class Tab2 : Fragment() {
                 title = inputText,
                 place = "$currentCity, $currentCountry",
                 timestamp = Timestamp(System.currentTimeMillis()),
-                star = inputRating,
+                star = newStar,
                 people = peopleNames,
                 type = "external",
                 uri = photoUri.toString()
@@ -423,13 +501,13 @@ class Tab2 : Fragment() {
         val adapter = itemProfileAdapter(requireContext(), profileList, checkedItems, selectedProfile)
 
         AlertDialog.Builder(requireContext())
-            .setTitle("Select People")
+            .setTitle("함께한 사람을 골라주세요")
             .setAdapter(adapter, null)  // 여기서 커스텀 어댑터를 설정
-            .setPositiveButton("OK") { dialog, _ ->
+            .setPositiveButton("확인") { dialog, _ ->
                 selectedProfiles = selectedProfile.filterNotNull()
                 dialog.dismiss()
             }
-            .setNegativeButton("Cancel") { dialog, _ ->
+            .setNegativeButton("취소") { dialog, _ ->
                 dialog.dismiss()
             }
             .show()
@@ -483,14 +561,14 @@ class Tab2 : Fragment() {
         adjustSquareImage(gridLayout, newPhotoDataList.size)
     }
 
-    fun modalDataToText(place: String, timestamp: Timestamp, star: Int, people: List<String>): String {
-        val dateFormat = SimpleDateFormat("yyyy년 MM월 dd일 HH시 mm분")
-        val formattedDate = dateFormat.format(timestamp)
-        val stars = "⭐".repeat(star)
-        val peopleText = people.joinToString(", ")
-
-        return "장소: $place\n\n시간: $formattedDate\n\n인물: $peopleText\n\n별점: $stars"
-    }
+//    fun modalDataToText(place: String, timestamp: Timestamp, star: Int, people: List<String>): String {
+//        val dateFormat = SimpleDateFormat("HH시 mm분, yyyy년 MM월 dd일")
+//        val formattedDate = dateFormat.format(timestamp)
+////        val stars = "⭐".repeat(star)
+//        val peopleText = people.joinToString(", ")
+//
+//        return "장소: $place\n\n시간: $formattedDate\n\n인물: $peopleText"
+//    }
 
     fun appendPlace(newPlace: String){
         if (placeList.isNullOrEmpty()) {
@@ -546,6 +624,7 @@ class itemProfileAdapter(
         // 이미지 로딩 라이브러리 (예: Glide)를 사용하여 이미지 로드
         Glide.with(context)
             .load(profile?.image) // profile.image는 이미지 URL
+            .circleCrop()
             .into(imageView)
 
         val checkBox = view.findViewById<CheckBox>(R.id.profile_checkbox)
