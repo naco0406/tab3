@@ -1,117 +1,89 @@
 [
   {
-    "title": "choonsik_1",
-    "place": "파리",
-    "timestamp": "2023-12-30T05:45:29Z",
-    "star": 5,
-    "people": [
-      "김성호",
-      "이현지"
-    ],
-    "type": "internal",
-    "uri": "image_choonsik1"
-  },
-  {
-    "title": "choonsik_2",
-    "place": "파리",
-    "timestamp": "2023-12-29T04:45:29Z",
-    "star": 1,
-    "people": [
-      "이현지"
-    ],
-    "type": "internal",
-    "uri": "image_choonsik2"
-  },
-  {
-    "title": "choonsik_3",
-    "place": "뉴욕",
-    "timestamp": "2023-12-28T03:45:29Z",
-    "star": 5,
-    "people": [
-      "박미영"
-    ],
-    "type": "internal",
-    "uri": "image_choonsik3"
-  },
-  {
-    "title": "choonsik_4",
-    "place": "파리",
-    "timestamp": "2023-12-27T02:45:29Z",
-    "star": 5,
-    "people": [
-      "박미영"
-    ],
-    "type": "internal",
-    "uri": "image_choonsik4"
-  },
-  {
-    "title": "choonsik_5",
-    "place": "파리",
-    "timestamp": "2023-12-26T01:45:29Z",
-    "star": 5,
-    "people": [
-      "이현지",
-      "홍길동"
-    ],
-    "type": "internal",
-    "uri": "image_choonsik5"
-  },
-  {
-    "title": "cat1",
-    "place": "파리",
-    "timestamp": "2023-12-25T00:45:29Z",
-    "star": 4,
-    "people": [
-      "김성호"
-    ],
-    "type": "internal",
-    "uri": "image_cat1"
-  },
-  {
-    "title": "cat2",
-    "place": "서울",
-    "timestamp": "2023-12-23T23:45:29Z",
+    "title": "씨엠립",
+    "place": "프놈펜, 캄보디아",
+    "timestamp": "2024-01-01T20:23:29Z",
     "star": 3,
     "people": [
-      "홍길동",
-      "이현지"
+      "민지",
+      "해린",
+      "하니",
+      "혜인"
     ],
     "type": "internal",
-    "uri": "image_cat2"
+    "uri": "place1"
   },
   {
-    "title": "cat3",
-    "place": "파리",
-    "timestamp": "2023-12-22T22:45:29Z",
+    "title": "노르웨이 어딘가",
+    "place": "베르겐, 노르웨이",
+    "timestamp": "2024-01-03T20:45:29Z",
     "star": 3,
     "people": [
-      "홍길동",
-      "박미영"
+      "민지",
+      "하니"
     ],
     "type": "internal",
-    "uri": "image_cat3"
+    "uri": "place2"
   },
   {
-    "title": "cat4",
-    "place": "서울",
-    "timestamp": "2023-12-21T21:45:29Z",
-    "star": 4,
-    "people": [
-      "이현지"
-    ],
-    "type": "internal",
-    "uri": "image_cat4"
-  },
-  {
-    "title": "cat5",
-    "place": "서울",
+    "title": "아름다웠던 곳",
+    "place": "서울특별시, 대한민국",
     "timestamp": "2023-12-20T20:45:29Z",
     "star": 3,
     "people": [
-      "김성호",
-      "이현지"
+      "하니"
     ],
     "type": "internal",
-    "uri": "image_cat5"
+    "uri": "place3"
+  },
+  {
+    "title": "가을 뷰",
+    "place": "서울특별시, 대한민국",
+    "timestamp": "2023-11-29T10:45:29Z",
+    "star": 3,
+    "people": [
+    ],
+    "type": "internal",
+    "uri": "place4"
+  },
+  {
+    "title": "푸른 바다",
+    "place": "하와이, 미국",
+    "timestamp": "2023-11-30T15:22:29Z",
+    "star": 3,
+    "people": [
+    ],
+    "type": "internal",
+    "uri": "place5"
+  },
+  {
+    "title": "내 친구들",
+    "place": "부산광역시, 대한민국",
+    "timestamp": "2023-12-17T18:20:29Z",
+    "star": 3,
+    "people": [
+    ],
+    "type": "internal",
+    "uri": "place6"
+  },
+  {
+    "title": "가을 단풍나무",
+    "place": "대전광역시, 대한민국",
+    "timestamp": "2023-12-13T19:43:29Z",
+    "star": 3,
+    "people": [
+    ],
+    "type": "internal",
+    "uri": "place7"
+  },
+  {
+    "title": "한강 앞에서",
+    "place": "서울특별시, 대한민국",
+    "timestamp": "2023-12-13T22:28:29Z",
+    "star": 3,
+    "people": [
+    ],
+    "type": "internal",
+    "uri": "place8"
   }
 ]
