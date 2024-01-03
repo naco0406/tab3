@@ -16,6 +16,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.Window
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
@@ -51,16 +52,6 @@ class Tab1 : Fragment(), ProfileAdapter.OnItemClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         JsonUtility(requireContext()).copyFileToInternalStorage("data_sample_user.json", "data_user.json")
-//        val users = JsonUtility(requireContext()).readPhotoData("data_user.json")
-//        users.forEach {
-//
-//        }
-//        if (context?.let { ContextCompat.checkSelfPermission(it, Manifest.permission.READ_EXTERNAL_STORAGE) } != PackageManager.PERMISSION_GRANTED) {
-//            ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 100)
-//        }
-//        if (context?.let { ContextCompat.checkSelfPermission(it, Manifest.permission.WRITE_EXTERNAL_STORAGE) } != PackageManager.PERMISSION_GRANTED) {
-//            ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), 100)
-//        }
 
         val permissions = arrayOf(
             Manifest.permission.READ_EXTERNAL_STORAGE,
@@ -157,6 +148,8 @@ class Tab1 : Fragment(), ProfileAdapter.OnItemClickListener {
         val userName = dialogView.findViewById<EditText>(R.id.addUserName).text
         val userPhone = dialogView.findViewById<EditText>(R.id.addUserPhone).text
 
+        val transformation = MultiTransformation(CenterCrop(), RoundedCorners(16))
+
         // Profile Add Button
         val transformation = MultiTransformation(RoundedCorners(16))
         fabProfile.setOnClickListener {
@@ -167,6 +160,7 @@ class Tab1 : Fragment(), ProfileAdapter.OnItemClickListener {
                 .load(R.drawable.image_cat1)  // 기본이미지
                 .apply(RequestOptions.bitmapTransform(transformation))
                 .placeholder(R.drawable.outline_image_24)
+                .apply((RequestOptions.bitmapTransform(transformation)))
                 .error(R.drawable.outline_broken_image_24)
                 .into(userImage)
 
@@ -215,7 +209,6 @@ class Tab1 : Fragment(), ProfileAdapter.OnItemClickListener {
                         dialog.dismiss()
                     })
                 .show()
-
             userImage.setOnClickListener{
                 openGalleryForImage(userImage)
             }
