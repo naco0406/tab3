@@ -3,6 +3,7 @@ package com.example.madcamp
 import CustomDatePickerDialog
 import android.app.DatePickerDialog
 import android.graphics.Color
+import android.graphics.drawable.Drawable
 import android.icu.util.Calendar
 import android.media.Image
 import android.os.Build
@@ -64,6 +65,7 @@ class EventDecorator(private val dates: HashSet<CalendarDay>) : DayViewDecorator
 class Tab3 : Fragment(), CustomDatePickerDialog.DatePickerDialogListener, OnDateSelectedListener {
 
     private lateinit var onceSelectedDate: CalendarDay
+    private var selectedDatePhotoNum: Int = 0
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<View>
     private lateinit var cards: List<PhotoData>
     private val cardViewPairs = mutableListOf<Pair<CardView, ImageView>>()
@@ -83,7 +85,9 @@ class Tab3 : Fragment(), CustomDatePickerDialog.DatePickerDialogListener, OnDate
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        // CardView 참조를 저장할 리스트
+
+        val customScrollView: CustomScrollView = view.findViewById(R.id.customScrollView)
+        bottomSheetBehavior = BottomSheetBehavior.from(customScrollView)
 
         cards = JsonUtility(requireContext()).readPhotoData("data_image.json")
         val dateSet = HashSet<CalendarDay>()
@@ -127,12 +131,10 @@ class Tab3 : Fragment(), CustomDatePickerDialog.DatePickerDialogListener, OnDate
 //        val bottomSheet = view.findViewById<LinearLayout>(R.id.bottom_sheet)
 //        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet)
 
-        val customScrollView: CustomScrollView = view.findViewById(R.id.customScrollView)
         val bottomSheetLayout: LinearLayout = view.findViewById(R.id.bottom_sheet)
         addCardsAndSpaceToLayout(cards, bottomSheetLayout)
 
-//        val bottomSheetBehavior = BottomSheetBehavior.from(view.findViewById<CustomScrollView>(R.id.customScrollView))
-        bottomSheetBehavior = BottomSheetBehavior.from(customScrollView)
+
 
         // BottomSheetBehavior 설정
         bottomSheetBehavior.peekHeight = resources.getDimensionPixelSize(R.dimen.bottom_sheet_peek_height_month)
@@ -160,7 +162,17 @@ class Tab3 : Fragment(), CustomDatePickerDialog.DatePickerDialogListener, OnDate
                             .commit()
                         toolbar.visibility = View.VISIBLE
                         customScrollView.setScrollingEnabled(true)
-                        bottomSheetBehavior.setDraggable(false)
+                        if (selectedDatePhotoNum > 1){
+                            bottomSheetBehavior.setDraggable(false)
+                        }
+                        cardViewPairs.forEach { (cardView, imageView) ->
+                            val originalHeight = 0
+                            val width = imageView.width
+                            val newHeight = originalHeight + width
+                            val layoutParams = imageView.layoutParams
+                            layoutParams.height = newHeight
+                            imageView.layoutParams = layoutParams
+                        }
                     }
                     BottomSheetBehavior.STATE_EXPANDED -> {
                         Log.d("bottomSheet", "Expanded")
@@ -185,17 +197,23 @@ class Tab3 : Fragment(), CustomDatePickerDialog.DatePickerDialogListener, OnDate
 //                calendarView.state().edit()
 //                    .setCalendarDisplayMode(CalendarMode.MONTHS)
 //                    .commit()
-                customScrollView.setScrollingEnabled(false)
+//                customScrollView.setScrollingEnabled(false)
+                Log.d("onSlide", "slideOffset: $slideOffset")
                 if (slideOffset > 0.75f){
                     bottomSheetBehavior.state = BottomSheetBehavior.STATE_HALF_EXPANDED
                 }
-                val newWidth = 100.dp * (1 + slideOffset * 2)
+//                val newHeight = 100.dp * (1 + slideOffset * 2)
                 cardViewPairs.forEach { (cardView, imageView) ->
-                    // 여기서 각 CardView의 크기를 조정하는 로직을 구현
-                    val layoutParams = cardView.layoutParams
-                    layoutParams.height = newWidth.toInt()
-                    cardView.layoutParams = layoutParams
-                    imageView.alpha = 1 - slideOffset
+                    val originalHeight = 0
+                    val width = imageView.width
+
+                    // slideOffset이 0에서 0.6 사이일 때 높이를 조정
+                    if (slideOffset in 0.0..0.6) {
+                        val newHeight = (originalHeight + width * slideOffset / 0.6).toInt()
+                        val layoutParams = imageView.layoutParams
+                        layoutParams.height = newHeight
+                        imageView.layoutParams = layoutParams
+                    }
                 }
             }
         })
@@ -220,19 +238,17 @@ class Tab3 : Fragment(), CustomDatePickerDialog.DatePickerDialogListener, OnDate
             val date = Date(time.time)
             CalendarDay.from(date) == selectedDate
         }
+        selectedDatePhotoNum = filteredCards.size
         val bottomSheetLayout: LinearLayout = view?.findViewById(R.id.bottom_sheet) ?: return
         addCardsAndSpaceToLayout(filteredCards, bottomSheetLayout)
     }
 
     private fun showAllCards() {
         val bottomSheetLayout: LinearLayout = view?.findViewById(R.id.bottom_sheet) ?: return
+        selectedDatePhotoNum = cards.size
         addCardsAndSpaceToLayout(cards, bottomSheetLayout)
     }
-//
-//    private fun displayCards(cardsToShow: List<PhotoData>) {
-//        // CardView들을 동적으로 추가하거나 업데이트하는 로직
-//        // 예: cardsToShow에 있는 데이터를 사용하여 카드를 생성하고 화면에 표시
-//    }
+
     private fun createCardView(cardData: PhotoData): CardView {
         val cardView = CardView(requireContext())
 
@@ -284,34 +300,27 @@ class Tab3 : Fragment(), CustomDatePickerDialog.DatePickerDialogListener, OnDate
             }
             background = ContextCompat.getDrawable(context, R.drawable.black_bar)
         }
-//        barButton.setOnTouchListener { v, event ->
-//            when (event.action) {
-//                MotionEvent.ACTION_DOWN -> {
-//                    // 버튼이 눌렸을 때의 로직
-//                    bottomSheetBehavior.setDraggable(true)
-//                    Log.d("Bar Button", "Clicked")
-//                    true // 이벤트가 처리되었음을 나타냄
-//                }
-//                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
-//                    // 버튼에서 손가락이 떼어졌거나 취소되었을 때의 로직
-//                    bottomSheetBehavior.setDraggable(false)
-//                    Log.d("Bar Button", "Clicked Cancled")
-//                    true // 이벤트가 처리되었음을 나타냄
-//                }
-//                else -> {
-//                    Log.d("Bar Button", "Else")
-//                    false
-//                } // 이벤트가 처리되지 않았음을 나타냄
-//            }
-//        }
 
         linearLayout.addView(barButton)
 
-        val transformation = MultiTransformation(CenterCrop(), RoundedCorners(16))
+        val transformation = MultiTransformation(RoundedCorners(16))
         // 모든 카드 데이터에 대해 반복하여 카드 뷰를 생성하고 LinearLayout에 추가
         cardDataList.forEach { cardData ->
             val cardViewD = createCardView(cardData) // createCardView 함수는 이전 답변에서 정의
             val imageViewD = cardViewD.findViewById<ImageView>(R.id.cardImage)
+            val layoutParams = imageViewD.layoutParams
+            if (bottomSheetBehavior.state == BottomSheetBehavior.STATE_COLLAPSED){
+                layoutParams.height = 0
+                imageViewD.layoutParams = layoutParams
+            } else if (bottomSheetBehavior.state == BottomSheetBehavior.STATE_HALF_EXPANDED) {
+                val originalHeight = 0
+                val width = imageViewD.width
+                val newHeight = originalHeight + width
+                val layoutParams = imageViewD.layoutParams
+                layoutParams.height = newHeight
+                imageViewD.layoutParams = layoutParams
+            }
+
             when (cardData.type) {
                 "internal" -> {
                     val imageId = resources.getIdentifier(cardData.uri, "drawable", requireContext().packageName)
@@ -332,7 +341,7 @@ class Tab3 : Fragment(), CustomDatePickerDialog.DatePickerDialogListener, OnDate
             linearLayout.addView(cardViewD)
         }
 
-        val heightPerCard = 32
+        val heightPerCard = 140
         val spaceHeight = cardDataList.size * heightPerCard.dp
 
         // 모든 카드가 추가된 후, 마지막에 Space 뷰 추가
@@ -370,6 +379,7 @@ class Tab3 : Fragment(), CustomDatePickerDialog.DatePickerDialogListener, OnDate
     }
     override fun onPause() {
         super.onPause()
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
     }
 
     private fun showBottomSheet() {

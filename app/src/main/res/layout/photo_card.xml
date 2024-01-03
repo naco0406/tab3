@@ -62,6 +62,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:scaleType="centerCrop"
+        android:background="@drawable/profile_rounded_corner"
         android:src="@drawable/image_choonsik3"/>
 
     <!-- 추가적인 뷰들을 여기에 정의할 수 있습니다. -->

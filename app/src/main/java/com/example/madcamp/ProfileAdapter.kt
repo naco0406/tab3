@@ -15,20 +15,20 @@ import com.bumptech.glide.Glide
 import org.w3c.dom.Text
 
 
-class ProfileAdapter(var profileList: MutableList<Profile>):
-        RecyclerView.Adapter<ProfileAdapter.ProfileViewHolder>(), Filterable {
+class ProfileAdapter(private var profileListAll: MutableList<Profile>):
+    RecyclerView.Adapter<ProfileAdapter.ProfileViewHolder>(), Filterable {
 
-    private var profileListAll: MutableList<Profile> = ArrayList(profileList)
+    var profileList: MutableList<Profile> = ArrayList(profileListAll)
     private var onItemClickListener: OnItemClickListener? = null
 
-    private var selectedProfilePosition: Int = -1
+//    private var selectedProfilePosition: Int = -1
 
     init {
         sortByName()
     }
 
-    public fun sortByName() {
-        profileList = profileList.sortedBy { it.name }.toMutableList()
+    fun sortByName() {
+        profileList.sortBy { it.name }
         notifyDataSetChanged()
     }
 
@@ -43,12 +43,8 @@ class ProfileAdapter(var profileList: MutableList<Profile>):
     // 뷰와 내용 연결
     // recyclerview -> 재사용. 스크롤 내리거나 올릴때 호출
     override fun onBindViewHolder(holder: ProfileViewHolder, position: Int) {
-
         val profile = profileList[position]
 
-        // Glide로 이미지 로드 및 표시
-
-        Glide.with(holder.itemView.context).clear(holder.rv_image)
         Glide.with(holder.itemView.context)
             .load(profile.image)
             .override(100, 100)
@@ -56,16 +52,10 @@ class ProfileAdapter(var profileList: MutableList<Profile>):
             .error(R.drawable.outline_broken_image_24)
             .into(holder.rv_image)
 
-//        holder.rv_image.text = profile.image
         holder.rv_name.text = profile.name
         holder.rv_phone.text = profile.phone
-
-        // 뷰홀더에 클릭 리스너 설정
-        holder.itemView.setOnClickListener {
-            onItemClickListener?.onItemClick(position)
-        }
-
     }
+
     override fun getItemCount(): Int {
        // Log.d("size", profileList.size.toString())
         return profileList.size
@@ -80,13 +70,34 @@ class ProfileAdapter(var profileList: MutableList<Profile>):
     }
 
     fun updateData(newProfileList: List<Profile>) {
-        profileList = newProfileList.toMutableList()
-        notifyDataSetChanged()
+        this.profileListAll = newProfileList.toMutableList()
+        this.profileList = ArrayList(newProfileList)
+        sortByName()
     }
 
 
     override fun getFilter(): Filter {
-        return profileFilter
+        return object : Filter() {
+            override fun performFiltering(constraint: CharSequence?): FilterResults {
+                val filteredList = if (constraint.isNullOrBlank()) {
+                    profileListAll
+                } else {
+                    val filterPattern = constraint.toString().lowercase().trim()
+                    profileListAll.filter {
+                        it.name.lowercase().contains(filterPattern) ||
+                                it.phone.replace("-", "").contains(filterPattern)
+                    }.toMutableList()
+                }
+
+                return FilterResults().apply { values = filteredList }
+            }
+
+            override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
+                profileList.clear()
+                profileList.addAll(results?.values as List<Profile>)
+                notifyDataSetChanged()
+            }
+        }
     }
 
     // 해당 뷰와 연결

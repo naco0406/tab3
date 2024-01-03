@@ -34,9 +34,6 @@ import java.lang.reflect.Type
 
 
 class Tab1 : Fragment(), ProfileAdapter.OnItemClickListener {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
     private lateinit var profileAdapter: ProfileAdapter
     private lateinit var dialogView: View
@@ -122,9 +119,10 @@ class Tab1 : Fragment(), ProfileAdapter.OnItemClickListener {
         val context = context ?:return
         val jsonUtility = JsonUtility(context)
         try {
-            val jsonData = jsonUtility.readJson("data_sample_user.json").toString()
-            val profileType: Type = object: TypeToken<List<Profile>>() {}.type
-            val profiles = jsonUtility.parseJson<List<Profile>>(jsonData, profileType)
+//            val jsonData = jsonUtility.readJson("data_sample_user.json").toString()
+//            val profileType: Type = object: TypeToken<List<Profile>>() {}.type
+//            val profiles = jsonUtility.parseJson<List<Profile>>(jsonData, profileType)
+            val profiles = jsonUtility.readProfileData("data_user.json")
 
             profiles.forEach{
                 profileAllData.add(it)
@@ -246,7 +244,7 @@ class Tab1 : Fragment(), ProfileAdapter.OnItemClickListener {
 
     // 갤러리에서 이미지 선택
     private fun openGalleryForImage(userImage: ImageButton) {
-        val intent = Intent(Intent.ACTION_GET_CONTENT, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+        val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
         intent.type = "image/*"
         startActivityForResult(intent, 1)
     }
@@ -257,25 +255,24 @@ class Tab1 : Fragment(), ProfileAdapter.OnItemClickListener {
         // JSON 파일 다시 읽기
         val context = context ?:return
         val jsonUtility = JsonUtility(context)
+        val updatedProfiles = jsonUtility.readProfileData("data_user.json").toMutableList()
 
-        val profiles = jsonUtility.readProfileData("data_user.json").toMutableList()
-
-        profiles.forEach{
+        updatedProfiles.forEach{
             profileAllData.add(it)
         }
+        Log.d("updateRecyclerView ", profileAllData.toString())
+        profileAdapter.updateData(profileAllData)
 //        val profileAdapter = ProfileAdapter(profileAllData)
 //        val rv_profile = view?.findViewById<RecyclerView>(R.id.rv_profile)
 //        rv_profile?.adapter = profileAdapter
 //        profileAdapter.sortByName()
-//        this@Tab1.profileAdapter = ProfileAdapter(profileAllData)
+        this@Tab1.profileAdapter = ProfileAdapter(profileAllData)
 //
 //        // RecyclerView 아이템 클릭 리스너 설정
 //        profileAdapter.setOnItemClickListener(this)
-//        Log.d("updateRecyclerView ", profileAllData.toString())
 //
 //        profileAdapter.notifyDataSetChanged()
 //        Log.d("notifyDataSetChanged", "")
-        profileAdapter.updateData(profileAllData)
         profileAdapter.sortByName()
         profileAdapter.notifyDataSetChanged()
     }

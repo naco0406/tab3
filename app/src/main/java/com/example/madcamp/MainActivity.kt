@@ -32,6 +32,7 @@ class MainActivity : AppCompatActivity() {
         val viewPager: ViewPager2 = findViewById(R.id.viewPager)
         val tabLayout: TabLayout = findViewById(R.id.tabLayout)
         viewPager.adapter = ViewPagerAdapter(this)
+        viewPager.setCurrentItem(1, false)
         // 커스텀 레이아웃을 사용하여 탭 설정
         TabLayoutMediator(tabLayout, viewPager) { tab, position ->
             // 커스텀 뷰를 인플레이트
@@ -43,21 +44,23 @@ class MainActivity : AppCompatActivity() {
                 0 -> {
                     tabIcon.setImageResource(R.drawable.outline_contact_page_24)
                     tabText.text = "연락처"
+                    tabText.textSize = 12f
+                    tabText.setTextColor(ContextCompat.getColor(this, R.color.dark_gray))
+                    tabIcon.setColorFilter(ContextCompat.getColor(this, R.color.dark_gray))
+                }
+                1 -> {
+                    tabIcon.setImageResource(R.drawable.outline_edit_24)
+                    tabText.text = "일기"
+
                     tabText.setTextColor(ContextCompat.getColor(this, R.color.key))
                     tabIcon.setColorFilter(ContextCompat.getColor(this, R.color.key))
                     tabText.textSize = 16f
                     tabText.typeface = ResourcesCompat.getFont(this, R.font.gothic_a1_bold)
-
-                }
-                1 -> {
-                    tabIcon.setImageResource(R.drawable.outline_photo_library_24)
-                    tabText.text = "갤러리"
-                    tabText.setTextColor(ContextCompat.getColor(this, R.color.dark_gray))
-                    tabIcon.setColorFilter(ContextCompat.getColor(this, R.color.dark_gray))
                 }
                 2 -> {
-                    tabIcon.setImageResource(R.drawable.outline_edit_24)
-                    tabText.text = "일기"
+                    tabIcon.setImageResource(R.drawable.outline_photo_library_24)
+                    tabText.text = "갤러리"
+                    tabText.textSize = 12f
                     tabText.setTextColor(ContextCompat.getColor(this, R.color.dark_gray))
                     tabIcon.setColorFilter(ContextCompat.getColor(this, R.color.dark_gray))
                 }
@@ -113,7 +116,7 @@ class MainActivity : AppCompatActivity() {
 }
 class ViewPagerAdapter(activity: FragmentActivity) : FragmentStateAdapter(activity){
     private lateinit var viewPagerAdapter: ViewPagerAdapter
-    val fragments = listOf<Fragment>(Tab1(), Tab2(), Tab3())
+    val fragments = listOf<Fragment>(Tab1(), Tab3(), Tab2())
 
     override fun getItemCount(): Int {
         return fragments.size
