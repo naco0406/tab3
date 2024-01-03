@@ -1,4 +1,4 @@
-# NAGA, Navigate Adventure, GeoTag Album
+# NAGA, 나가
 
 <img src="https://github.com/naco0406/tab3/assets/71596178/a353ec70-a146-41ba-abd9-039cab8b3857.png" width="640" height="360"/>
 <img src="https://github.com/naco0406/tab3/assets/71596178/f0c822c5-5d48-492a-8697-06fec4bc968a.png" width="640" height="360"/>
