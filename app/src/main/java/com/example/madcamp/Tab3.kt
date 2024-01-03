@@ -130,6 +130,13 @@ class Tab3 : Fragment(), CustomDatePickerDialog.DatePickerDialogListener, OnDate
             calendarView.setCurrentDate(today)
             calendarView.setSelectedDate(today)
             updateCardViewsForSelectedDate(today)
+            val currentDate = Calendar.getInstance()
+            val year = currentDate.get(Calendar.YEAR)
+            val month = currentDate.get(Calendar.MONTH) + 1
+            val tvDate = view.findViewById<TextView>(R.id.calendarMonth)
+            tvDate.text = "${month}월"
+            val tvYear = view?.findViewById<TextView>(R.id.calendarYear)
+            tvYear?.text = "${year}"
         }
 
         val currentDate = Calendar.getInstance()

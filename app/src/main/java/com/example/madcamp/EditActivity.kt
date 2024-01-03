@@ -111,7 +111,7 @@ class EditActivity : AppCompatActivity() {
             jsonUtility.updateProfileDataJson("data_user.json", profiles[index])
         }
 
-        val intent = Intent(this, ProfileSubActivity::class.java).apply {
+        val intent = Intent(this, MainActivity::class.java).apply {
             putExtra("profileId", id)
             putExtra("image", imageUrl)
             putExtra("name", name)

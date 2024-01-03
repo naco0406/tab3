@@ -7,6 +7,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.bumptech.glide.Glide
 import android.Manifest
+import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -25,6 +26,9 @@ class ProfileSubActivity : AppCompatActivity() {
 
         val backButton: ImageButton = findViewById(R.id.backButton)
         backButton.setOnClickListener {
+            val data = Intent()
+            data.putExtra("updateNeeded", true)
+            setResult(Activity.RESULT_OK, data)
             onBackPressed()
         }
 
