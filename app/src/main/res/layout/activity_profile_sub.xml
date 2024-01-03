@@ -42,7 +42,7 @@
                 android:background="@android:color/transparent"
                 android:text="편집"
                 android:textColor="@color/black"
-                android:textSize="20dp"
+                android:textSize="16dp"
                 android:paddingRight="24dp"
                 android:paddingTop="16dp"/>
         </LinearLayout>
